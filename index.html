@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Why QA Sends You Cases</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&amp;family=Lexend:wght@400;500;600;700&amp;family=Lato:wght@400;700;900&amp;display=swap">
+<style>
+body{margin:0;font-family:'Lato',system-ui,sans-serif;background:#0E1B2E;color:#0B2545}
+a{color:#1466F0}a:hover{color:#0B4FC0}
+.stage *{box-sizing:border-box}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace}
+.disp{font-family:'Lexend','Lato',sans-serif}
+.paused,.paused *{animation-play-state:paused !important}
+.sh{position:absolute;left:40px;top:-4px}
+.h2{font-family:'Lexend','Lato',sans-serif;font-size:30px;font-weight:700;color:#0B2545}
+.h2s{font-size:18px;color:#3B4F6B}
+.sc{position:absolute;top:66px;height:86px;border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.sr{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.sn{font-family:'Lexend','Lato',sans-serif;width:30px;height:30px;border-radius:15px;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
+.st{font-size:16px;font-weight:900;color:#0B2545;line-height:1.2}
+.tg{display:inline-flex;align-items:center;height:22px;padding:0 10px;border-radius:11px;color:#FFFFFF;font-size:11px;font-weight:900;letter-spacing:.03em;white-space:nowrap}
+.mk{position:absolute;right:-9px;bottom:-11px}
+.panel{position:absolute;left:40px;top:170px;width:1200px;height:460px;border-radius:22px;background:#FFFFFF;box-shadow:0 14px 36px rgba(11,37,69,.10);overflow:hidden}
+.win{position:absolute;left:0;top:0;width:1200px;height:460px;background:#FFFFFF}
+.ill{position:absolute;left:26px;top:26px;width:470px;height:408px;border-radius:18px;overflow:hidden}
+.tc{position:absolute;left:530px;top:30px;width:640px;display:flex;flex-direction:column;gap:12px}
+.eb{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.tt{font-family:'Lexend','Lato',sans-serif;font-size:28px;font-weight:700;color:#0B2545;line-height:1.2;margin-bottom:2px}
+.bl{display:flex;gap:12px;align-items:flex-start}
+.bn{width:26px;height:26px;border-radius:13px;font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.bt{font-size:19px;line-height:1.4;color:#0B2545;font-weight:700}
+.lp{align-self:flex-start;margin-top:10px;height:46px;padding:0 20px 0 10px;border-radius:23px;display:inline-flex;align-items:center;gap:10px;font-size:17px;font-weight:900}
+.ex{margin-top:6px;border-radius:14px;background:#FFF7F0;border:2px dashed #C2410C;padding:12px 16px;display:flex;flex-direction:column;gap:6px}
+.exh{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#9A3412}
+.ext{font-size:17px;line-height:1.45;font-weight:700;color:#0B2545}
+.wc{position:absolute;background:#FFFFFF;border-radius:14px;box-shadow:0 10px 24px rgba(11,37,69,.14);overflow:hidden}
+.bar{height:30px;background:#E9EEF5;display:flex;align-items:center;gap:5px;padding:0 10px}
+.dot{width:8px;height:8px;border-radius:4px}
+.url{margin-left:6px;flex-grow:1;height:18px;border-radius:9px;background:#FFFFFF;font-size:11px;color:#3B4F6B;padding:0 8px;line-height:18px;white-space:nowrap;overflow:hidden}
+.ln{height:8px;border-radius:4px;background:#E3E9F2}
+.lab{font-size:12px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:#5A6B84}
+.fld{height:32px;border-radius:8px;border:2px solid #C9D3E1;display:flex;align-items:center;padding:0 10px;font-size:13px;color:#0B2545}
+.av{position:absolute}
+@keyframes panX{0%,15%{transform:translateX(0)}85%,100%{transform:translateX(-1264px)}}
+.shot{position:absolute;left:26px;top:26px;width:700px;height:408px;border-radius:14px;background:#EEF2F8;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.tc2{position:absolute;left:752px;top:30px;width:424px;display:flex;flex-direction:column;gap:12px}
+.call{margin-top:6px;border-radius:14px;background:#1466F0;color:#FFFFFF;padding:14px 18px;display:flex;flex-direction:column;gap:4px}
+.rz{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:16px;background:#FFF7F0;border:2px solid #C2410C;color:#7C2D12;font-size:14px;font-weight:900;white-space:nowrap}
+.ch{height:40px;padding:0 16px;border-radius:20px;background:#FFFFFF;display:inline-flex;align-items:center;font-size:15px;font-weight:900}
+.row{height:44px;border-radius:12px;background:#FFFFFF;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:16px;font-weight:700;color:#0B2545;box-shadow:0 4px 10px rgba(11,37,69,.06)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes fromL{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:none}}
+@keyframes fromR{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(.6)}70%{opacity:1;transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
+@keyframes zoomIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@keyframes win{0%{opacity:0;transform:translateY(14px)}9%{opacity:1;transform:none}90%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-10px)}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(20,102,240,.45),0 18px 40px rgba(11,37,69,.14)}50%{box-shadow:0 0 0 16px rgba(20,102,240,0),0 18px 40px rgba(11,37,69,.14)}}
+@keyframes warnPulse{0%,100%{box-shadow:0 0 0 0 rgba(234,88,12,.55)}50%{box-shadow:0 0 0 12px rgba(234,88,12,0)}}
+@keyframes press{0%,100%{transform:scale(1)}50%{transform:scale(.94)}}
+@keyframes typeIn{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes stamp{0%{opacity:0;transform:scale(1.7) rotate(-7deg)}60%{opacity:1;transform:scale(.95) rotate(-7deg)}100%{opacity:1;transform:scale(1) rotate(-7deg)}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes march{to{stroke-dashoffset:-72}}
+@keyframes arc{from{stroke-dashoffset:302}to{stroke-dashoffset:0}}
+@keyframes pass{from{transform:translateX(0)}to{transform:translateX(196px)}}
+@keyframes toL{from{opacity:1;transform:none}to{opacity:0;transform:translate(-320px,250px) scale(.35)}}
+@keyframes toR{from{opacity:1;transform:none}to{opacity:0;transform:translate(320px,250px) scale(.35)}}
+@keyframes hiO{0%{background:#FFFFFF}100%{background:#FFF1E6;box-shadow:0 0 0 3px #C2410C}}
+@keyframes toGrey{to{background:#94A3B8}}
+@keyframes litRing{0%{box-shadow:0 0 0 0 currentColor;transform:none}8%,92%{box-shadow:0 0 0 4px currentColor,0 16px 30px rgba(11,37,69,.18);transform:translateY(-6px)}100%{box-shadow:0 0 0 0 transparent;transform:none}}
+.ctl{height:44px;min-width:44px;padding:0 14px;border-radius:10px;border:1px solid #2A3E5C;background:#15263F;color:#E6EEF8;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;white-space:nowrap}
+.ctl:hover{background:#1D3354}
+.ctl.main{background:#1466F0;border-color:#1466F0;color:#fff}
+.ctl.main:hover{background:#0B55D0}
+.chip{height:32px;padding:0 7px;letter-spacing:-.01em;border-radius:16px;border:1px solid #2A3E5C;background:transparent;color:#A9B8CC;font-family:'Lato',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.chip:hover{color:#fff;border-color:#4A6488}
+.chip.done{color:#D5E0EE;border-color:#34507A;background:#16304F}
+.chip.on{color:#0B2545;background:#8FD16F;border-color:#8FD16F}
+</style>
+<style>
+html,body{height:100%}
+body{display:flex;align-items:center;justify-content:center;overflow:hidden}
+#fit{width:1280px;height:870px;transform-origin:center center;flex-shrink:0}
+[hidden]{display:none !important}
+</style>
+</head>
+<body>
+<div id="fit">
+<div style="width: 1280px; height: 870px; background: #0E1B2E; display: flex; flex-direction: column; overflow: hidden;">
+
+<!-- hidden symbol library -->
+<svg width="0" height="0" style="position: absolute; width: 0; height: 0;" aria-hidden="true">
+<defs>
+<symbol id="dc-customer" viewBox="0 0 200 200">
+<path d="M58 88 C52 38 148 38 142 88 L146 124 C132 132 124 116 122 104 L78 104 C76 116 68 132 54 124 Z" fill="#3B2A26"></path>
+<path d="M40 200 C40 150 66 128 100 128 C134 128 160 150 160 200 Z" fill="#23A094"></path>
+<path d="M84 129 L100 152 L116 129 Z" fill="#E6F6F3"></path>
+<rect x="89" y="104" width="22" height="28" rx="8" fill="#E2A77F"></rect>
+<ellipse cx="100" cy="82" rx="32" ry="36" fill="#F1C39E"></ellipse>
+<path d="M66 76 C68 42 132 40 136 78 C118 64 94 60 70 80 Z" fill="#3B2A26"></path>
+<circle cx="88" cy="87" r="3.8" fill="#1F2937"></circle>
+<circle cx="112" cy="87" r="3.8" fill="#1F2937"></circle>
+<circle cx="79" cy="98" r="5.5" fill="#F29A86" opacity=".45"></circle>
+<circle cx="121" cy="98" r="5.5" fill="#F29A86" opacity=".45"></circle>
+<path d="M90 102 Q100 109 110 102" stroke="#A0523D" stroke-width="3" fill="none" stroke-linecap="round"></path>
+</symbol>
+<symbol id="dc-agent" viewBox="0 0 200 200">
+<path d="M40 200 C40 150 66 128 100 128 C134 128 160 150 160 200 Z" fill="#1466F0"></path>
+<path d="M84 129 L100 150 L116 129 Z" fill="#FFFFFF"></path>
+<rect x="89" y="104" width="22" height="28" rx="8" fill="#B97A55"></rect>
+<ellipse cx="68" cy="88" rx="7" ry="10" fill="#C98B63"></ellipse>
+<ellipse cx="132" cy="88" rx="7" ry="10" fill="#C98B63"></ellipse>
+<ellipse cx="100" cy="82" rx="32" ry="36" fill="#D39A72"></ellipse>
+<path d="M67 80 C62 42 138 40 133 80 C126 60 80 58 67 80 Z" fill="#1F1A17"></path>
+<circle cx="88" cy="87" r="3.8" fill="#1F2937"></circle>
+<circle cx="112" cy="87" r="3.8" fill="#1F2937"></circle>
+<path d="M89 101 Q100 109 111 101" stroke="#7A3B2A" stroke-width="3" fill="none" stroke-linecap="round"></path>
+</symbol>
+<symbol id="dc-server" viewBox="0 0 120 150">
+<rect x="10" y="6" width="100" height="40" rx="8" fill="#243B5E"></rect>
+<rect x="10" y="54" width="100" height="40" rx="8" fill="#2E4A73"></rect>
+<rect x="10" y="102" width="100" height="40" rx="8" fill="#243B5E"></rect>
+<circle cx="28" cy="26" r="5" fill="#8FD16F"></circle><circle cx="28" cy="74" r="5" fill="#8FD16F"></circle><circle cx="28" cy="122" r="5" fill="#8FD16F"></circle>
+<rect x="46" y="22" width="50" height="8" rx="4" fill="#5B7BA6"></rect><rect x="46" y="70" width="50" height="8" rx="4" fill="#5B7BA6"></rect><rect x="46" y="118" width="50" height="8" rx="4" fill="#5B7BA6"></rect>
+</symbol>
+<symbol id="dc-check" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="11" fill="#3E9B2F"></circle>
+<path d="M6.5 12.5 L10.3 16.2 L17.5 8.6" stroke="#FFFFFF" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+</symbol>
+<symbol id="dc-x" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="11" fill="#C2410C"></circle>
+<path d="M8 8l8 8M16 8l-8 8" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round"></path>
+</symbol>
+<symbol id="dc-warn" viewBox="0 0 24 24">
+<path d="M12 3 L22 20.5 H2 Z" fill="#F2A93B" stroke="#8A5200" stroke-width="1.4" stroke-linejoin="round"></path>
+<path d="M12 9.5 V14.5" stroke="#5A3500" stroke-width="2.2" stroke-linecap="round"></path>
+<circle cx="12" cy="17.4" r="1.3" fill="#5A3500"></circle>
+</symbol>
+<symbol id="dc-ticket" viewBox="0 0 24 24">
+<path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4z" fill="none" stroke="currentColor" stroke-width="1.8"></path>
+<path d="M9 5v14" stroke="currentColor" stroke-width="1.8" stroke-dasharray="2 2.4"></path>
+</symbol>
+<symbol id="dc-clock" viewBox="0 0 24 24">
+<circle cx="12" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="1.9"></circle>
+<path d="M12 8.5V13l3 2M10 2.5h4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></path>
+</symbol>
+<symbol id="dc-phone" viewBox="0 0 24 24">
+<path d="M5 3.5h3.5l2 5-2.5 1.6a11 11 0 0 0 5.4 5.4l1.6-2.5 5 2v3.5a2 2 0 0 1-2 2A17 17 0 0 1 3 5.5a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"></path>
+</symbol>
+<symbol id="dc-cal" viewBox="0 0 24 24">
+<rect x="3" y="5" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"></rect>
+<path d="M16 3v4M8 3v4M3 10h18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></path>
+</symbol>
+<symbol id="dc-mail" viewBox="0 0 24 24">
+<rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"></rect>
+<path d="M3.5 7l8.5 6 8.5-6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"></path>
+</symbol>
+<symbol id="dc-lock" viewBox="0 0 24 24">
+<rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"></rect>
+<path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.9"></path>
+<circle cx="12" cy="15.6" r="1.6" fill="currentColor"></circle>
+</symbol>
+<symbol id="dc-doc" viewBox="0 0 40 48">
+<path d="M4 4h22l10 10v30H4z" fill="#FFFFFF" stroke="#6D4AE0" stroke-width="2.4" stroke-linejoin="round"></path>
+<path d="M26 4v10h10" fill="none" stroke="#6D4AE0" stroke-width="2.4" stroke-linejoin="round"></path>
+<path d="M11 24h18M11 31h18M11 38h12" stroke="#B9A8F2" stroke-width="3" stroke-linecap="round"></path>
+</symbol>
+<symbol id="dc-img" viewBox="0 0 24 24">
+<rect x="3" y="4" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"></rect>
+<circle cx="9" cy="9.5" r="1.8" fill="currentColor"></circle>
+<path d="M3.5 17l5-5 4 4 3-3 5 5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"></path>
+</symbol>
+<symbol id="dc-play" viewBox="0 0 24 24">
+<path d="M7 4.5v15l12-7.5z" fill="currentColor"></path>
+</symbol>
+<symbol id="dc-edit" viewBox="0 0 24 24">
+<path d="M4 20h4L19 9l-4-4L4 16z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"></path>
+<path d="M13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="1.9"></path>
+</symbol>
+</defs>
+</svg>
+
+<!-- ===================== STAGE ===================== -->
+<div id="stage" class="stage" style="position: relative; width: 1280px; height: 720px; overflow: hidden; background: #F3F6FB; flex-shrink: 0;">
+
+<div style="position: absolute; left: -160px; top: -200px; width: 560px; height: 560px; border-radius: 50%; background: #E6EEFA;"></div>
+<div style="position: absolute; right: -120px; bottom: -220px; width: 520px; height: 520px; border-radius: 50%; background: #EAF5E4;"></div>
+
+<div style="position: absolute; left: 28px; top: 14px; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 700; color: #3B4F6B; letter-spacing: .02em;">
+<span id="steps" style="display: contents;"></span>
+<span class="disp" style="font-weight: 700; color: #0B2545; font-size: 16px;">MotionPoint Support</span>
+<span style="width: 4px; height: 4px; border-radius: 2px; background: #94A3B8;"></span>
+<span>New Agent Training &middot; Cases from QA</span>
+</div>
+
+<!-- ============ SCENE 0 · INTRO ============ -->
+<template id="scene-0">
+<div style="position: absolute; left: 0; top: 72px; width: 1280px; height: 648px;">
+<div style="position: absolute; left: 0; top: 24px; width: 1280px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center;"><div style="font-size: 16px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: #3E8A2A; animation: up .8s .4s both;">Customer Support &middot; New Agent Training</div><h1 class="disp" style="margin: 0; font-size: 60px; line-height: 1.05; font-weight: 700; color: #0B2545; animation: up .9s .9s both;">Why QA sends you cases</h1><p style="margin: 0; font-size: 23px; color: #3B4F6B; max-width: 980px; animation: up .9s 1.6s both;">Sometimes MotionPoint&rsquo;s QA team opens a case for Support. Here&rsquo;s why, and what to do.</p></div>
+<div style="position: absolute; left: 40px; top: 250px; width: 270px; height: 150px; border-radius: 20px; background: #DCE7F7; border: 3px solid #1466F0; padding: 18px; display: flex; flex-direction: column; gap: 8px; animation: pop .55s 6s both;"><span class="sn" style="background: #1466F0;">1</span><span class="disp" style="font-size: 22px; font-weight: 700; color: #0B2545;">Automation cases</span><span style="font-size: 15px; font-weight: 700; color: #3B4F6B; line-height: 1.35;">Origin site defects found by QA scripts</span></div>
+<svg width="36" height="24" style="position: absolute; left: 314px; top: 313px; animation: fadeIn .4s 6.8s both;"><path d="M2 12 H32 M24 4 L33 12 L24 20" stroke="#94A3B8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<div style="position: absolute; left: 350px; top: 250px; width: 270px; height: 150px; border-radius: 20px; background: #DDF3F1; border: 3px solid #0F7C7A; padding: 18px; display: flex; flex-direction: column; gap: 8px; animation: pop .55s 8s both;"><span class="sn" style="background: #0F7C7A;">2</span><span class="disp" style="font-size: 22px; font-weight: 700; color: #0B2545;">Customer action</span><span style="font-size: 15px; font-weight: 700; color: #3B4F6B; line-height: 1.35;">After a PE or TAM review</span></div>
+<svg width="36" height="24" style="position: absolute; left: 624px; top: 313px; animation: fadeIn .4s 8.8s both;"><path d="M2 12 H32 M24 4 L33 12 L24 20" stroke="#94A3B8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<div style="position: absolute; left: 660px; top: 250px; width: 270px; height: 150px; border-radius: 20px; background: #E3E9F2; border: 3px solid #0B2545; padding: 18px; display: flex; flex-direction: column; gap: 8px; animation: pop .55s 10s both;"><span class="sn" style="background: #0B2545;">3</span><span class="disp" style="font-size: 22px; font-weight: 700; color: #0B2545;">Explain it simply</span><span style="font-size: 15px; font-weight: 700; color: #3B4F6B; line-height: 1.35;">Your own words, CXM in CC</span></div>
+<svg width="36" height="24" style="position: absolute; left: 934px; top: 313px; animation: fadeIn .4s 10.8s both;"><path d="M2 12 H32 M24 4 L33 12 L24 20" stroke="#94A3B8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<div style="position: absolute; left: 970px; top: 250px; width: 270px; height: 150px; border-radius: 20px; background: #E5F4DE; border: 3px solid #2F7A22; padding: 18px; display: flex; flex-direction: column; gap: 8px; animation: pop .55s 12s both;"><span class="sn" style="background: #2F7A22;">4</span><span class="disp" style="font-size: 22px; font-weight: 700; color: #0B2545;">Pending + due date</span><span style="font-size: 15px; font-weight: 700; color: #3B4F6B; line-height: 1.35;">Business days: 1 week, or next day if Critical</span></div>
+<div style="position: absolute; left: 160px; top: 450px; width: 960px; height: 104px; border-radius: 20px; background: #0B2545; color: #FFFFFF; display: flex; align-items: center; gap: 18px; padding: 0 30px; animation: up .7s 16s both;"><svg width="40" height="40" style="flex-shrink: 0; color: #8FD16F;"><use href="#dc-mail"></use></svg><span style="font-size: 21px; font-weight: 900; line-height: 1.4;">Your mission: tell the customer, in simple words, that this needs action on their end.</span></div>
+</div>
+</template>
+
+<!-- ============ SCENE 1 · AUTOMATION ============ -->
+<template id="scene-1">
+<div style="position: absolute; left: 0; top: 72px; width: 1280px; height: 648px;">
+<div class="sh" style="animation: up .6s .2s both;"><div class="h2">Part 1: Automation cases</div><div class="h2s">Reason 1: origin site defects that affect the translated sites.</div></div>
+<div style="position: absolute; left: 40px; top: 70px; width: 1200px; height: 56px; border-radius: 28px; background: #0B2545; color: #FFFFFF; display: flex; align-items: center; gap: 14px; padding: 0 22px; font-size: 18px; font-weight: 900; animation: up .6s 2s both;"><svg width="26" height="26" style="color: #8FD16F;"><use href="#dc-server"></use></svg>QA&rsquo;s automated scripts check the sites and report what they find<svg width="300" height="10" style="margin-left: auto;"><path d="M0 5 H300" stroke="#8FD16F" stroke-width="3" stroke-dasharray="6 10" style="animation: march 1.2s linear infinite;"></path></svg></div>
+<span class="eb" style="position: absolute; left: 40px; top: 146px; color: #1466F0; animation: fadeIn .5s 4.5s both;">Origin site (the customer&rsquo;s English site)</span>
+<div class="wc" style="left: 40px; top: 172px; width: 440px; height: 210px; animation: zoomIn .6s 5s both;"><div class="bar"><span class="dot" style="background: #F28B82;"></span><span class="dot" style="background: #F6C453;"></span><span class="dot" style="background: #8FD16F;"></span><span class="url">www.example.com/shop/sale</span></div><div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;"><div class="ln" style="width: 70%;"></div><div class="ln" style="width: 90%;"></div><div class="ln" style="width: 55%;"></div><div style="margin-top: 6px; height: 46px; border-radius: 8px; border: 2px dashed #C2410C; background: #FFF7F0; display: flex; align-items: center; gap: 8px; padding: 0 10px; font-size: 13px; font-weight: 900; color: #9A3412; animation: pop .5s 6s both;"><svg width="20" height="20" style="flex-shrink: 0;"><use href="#dc-x"></use></svg>Broken link: Page not found</div></div></div>
+<svg width="70" height="24" style="position: absolute; left: 492px; top: 262px; animation: fadeIn .4s 9s both;"><path d="M2 12 H66 M58 4 L67 12 L58 20" stroke="#94A3B8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span style="position: absolute; left: 470px; top: 296px; width: 118px; text-align: center; font-size: 13px; font-weight: 900; color: #5A6B84; line-height: 1.3; animation: fadeIn .5s 9.5s both;">Translated sites are built from it</span>
+<span class="eb" style="position: absolute; left: 600px; top: 146px; color: #0F7C7A; animation: fadeIn .5s 10s both;">Translated sites</span>
+<div class="wc" style="left: 600px; top: 172px; width: 300px; height: 210px; animation: zoomIn .6s 11s both;"><div class="bar"><span class="dot" style="background: #F28B82;"></span><span class="dot" style="background: #F6C453;"></span><span class="dot" style="background: #8FD16F;"></span><span class="url">es.example.com/shop/sale</span></div><div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;"><div class="ln" style="width: 70%;"></div><div class="ln" style="width: 90%;"></div><div class="ln" style="width: 55%;"></div><div style="margin-top: 6px; height: 46px; border-radius: 8px; border: 2px dashed #C2410C; background: #FFF7F0; display: flex; align-items: center; gap: 8px; padding: 0 10px; font-size: 13px; font-weight: 900; color: #9A3412; animation: pop .5s 12s both;"><svg width="20" height="20" style="flex-shrink: 0;"><use href="#dc-x"></use></svg>Broken link: Page not found</div></div></div>
+<div class="wc" style="left: 940px; top: 172px; width: 300px; height: 210px; animation: zoomIn .6s 12s both;"><div class="bar"><span class="dot" style="background: #F28B82;"></span><span class="dot" style="background: #F6C453;"></span><span class="dot" style="background: #8FD16F;"></span><span class="url">fr.example.com/shop/sale</span></div><div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;"><div class="ln" style="width: 70%;"></div><div class="ln" style="width: 90%;"></div><div class="ln" style="width: 55%;"></div><div style="margin-top: 6px; height: 46px; border-radius: 8px; border: 2px dashed #C2410C; background: #FFF7F0; display: flex; align-items: center; gap: 8px; padding: 0 10px; font-size: 13px; font-weight: 900; color: #9A3412; animation: pop .5s 13s both;"><svg width="20" height="20" style="flex-shrink: 0;"><use href="#dc-x"></use></svg>Broken link: Page not found</div></div></div>
+<div style="position: absolute; left: 40px; top: 408px; width: 588px; height: 120px; border-radius: 16px; background: #DCE7F7; border: 3px solid #1466F0; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 6px; animation: pop .55s 20s both;"><span class="disp" style="font-size: 19px; font-weight: 700; color: #0B2545; line-height: 1.25;">QA opens an &ldquo;Automation&rdquo; case</span><span style="font-size: 15px; font-weight: 700; color: #3B4F6B; line-height: 1.35;">The defect is on the customer&rsquo;s origin site, so it shows on every translated site too.</span></div>
+<div style="position: absolute; left: 652px; top: 408px; width: 588px; height: 120px; border-radius: 16px; background: #FCE3CC; border: 3px solid #C2410C; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 6px; animation: pop .55s 30s both;"><span class="disp" style="font-size: 19px; font-weight: 700; color: #0B2545; line-height: 1.25;">Keep it open until the customer confirms</span><span style="font-size: 15px; font-weight: 700; color: #3B4F6B; line-height: 1.35;">Automation cases stay open until the customer confirms the issue is resolved.</span></div>
+<div style="position: absolute; left: 40px; top: 548px; width: 1200px; display: flex; justify-content: center; animation: up .6s 40s both;"><span class="ch" style="height: 50px; font-size: 18px; color: #0B2545; box-shadow: 0 6px 16px rgba(11,37,69,.10);">Only the customer can fix it: it&rsquo;s on their side.</span></div>
+</div>
+</template>
+
+<!-- ============ SCENE 2 · CUSTOMER ACTION ============ -->
+<template id="scene-2">
+<div style="position: absolute; left: 0; top: 72px; width: 1280px; height: 648px;">
+<div class="sh" style="animation: up .6s .2s both;"><div class="h2">Part 2: Customer action needed</div><div class="h2s">Reason 2: after a PE or TAM review.</div></div>
+<div class="sc" style="left: 40px; width: 389.33px; background: #DDF3F1; color: #0F7C7A; animation: up .6s 1.4s both, litRing 17s 4s both;"><div class="sr"><span class="sn" style="background: #0F7C7A;">1</span><span class="tg" style="background: #0F7C7A;">Review</span></div><div class="st">QA reports it to PE or the TAM</div><svg class="mk" width="28" height="28" style="animation: pop .5s 20.4s both;"><use href="#dc-check"></use></svg></div>
+<div class="sc" style="left: 445.33px; width: 389.33px; background: #DDF3F1; color: #0F7C7A; animation: up .6s 1.6s both, litRing 17s 21s both;"><div class="sr"><span class="sn" style="background: #0F7C7A;">2</span><span class="tg" style="background: #0F7C7A;">Customer</span></div><div class="st">Example: clear the CDN cache</div><svg class="mk" width="28" height="28" style="animation: pop .5s 37.4s both;"><use href="#dc-check"></use></svg></div>
+<div class="sc" style="left: 850.67px; width: 389.33px; background: #DDF3F1; color: #0F7C7A; animation: up .6s 1.8s both, litRing 17s 38s both;"><div class="sr"><span class="sn" style="background: #0F7C7A;">3</span><span class="tg" style="background: #0F7C7A;">Customer</span></div><div class="st">Make them aware</div><svg class="mk" width="28" height="28" style="animation: pop .5s 54.4s both;"><use href="#dc-check"></use></svg></div>
+<div class="panel" style="animation: up .7s 2.2s both;">
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #8A99AD; animation: fadeOut .5s 3.8s forwards;">How these cases reach you.</div>
+<div class="win" style="animation: win 17s 4s both;">
+<div class="shot" style="background: #F3F6FB; display: block;"><div style="position: absolute; left: 30px; top: 140px; width: 170px; height: 120px; border-radius: 16px; background: #DCE7F7; border: 3px solid #1466F0; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 6px; animation: pop .55s 4.8s both; align-items: center; text-align: center;"><span class="disp" style="font-size: 19px; font-weight: 700; color: #0B2545; line-height: 1.25;">QA</span><span style="font-size: 15px; font-weight: 700; color: #3B4F6B; line-height: 1.35;">Finds an issue</span></div><svg width="40" height="24" style="position: absolute; left: 206px; top: 188px; animation: fadeIn .4s 6s both;"><path d="M2 12 H36 M28 4 L37 12 L28 20" stroke="#94A3B8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg><div style="position: absolute; left: 252px; top: 140px; width: 190px; height: 120px; border-radius: 16px; background: #DDF3F1; border: 3px solid #0F7C7A; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 6px; animation: pop .55s 6.6s both; align-items: center; text-align: center;"><span class="disp" style="font-size: 19px; font-weight: 700; color: #0B2545; line-height: 1.25;">PE or TAM</span><span style="font-size: 15px; font-weight: 700; color: #3B4F6B; line-height: 1.35;">Reviews it</span></div><svg width="40" height="24" style="position: absolute; left: 448px; top: 188px; animation: fadeIn .4s 8s both;"><path d="M2 12 H36 M28 4 L37 12 L28 20" stroke="#94A3B8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg><div style="position: absolute; left: 494px; top: 120px; width: 180px; height: 160px; border-radius: 16px; background: #E5F4DE; border: 3px solid #2F7A22; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 6px; animation: pop .55s 8.6s both; align-items: center; text-align: center;"><span class="disp" style="font-size: 19px; font-weight: 700; color: #0B2545; line-height: 1.25;">Support</span><span style="font-size: 15px; font-weight: 700; color: #3B4F6B; line-height: 1.35;">Customer at fault, or needed to fix it? You get the case.</span></div></div>
+<div class="tc2">
+<div class="eb" style="color: #0F7C7A;">Reason 2 &middot; 1 of 3</div>
+<div class="tt" style="font-size: 26px;">QA reports it to PE or the TAM</div>
+<div class="bl" style="animation: fromR .6s 5.5s both;"><span class="bn" style="background: #DDF3F1; color: #0F7C7A;">1</span><span class="bt" style="font-size: 18px;">QA can report anything to a PE or the TAM.</span></div>
+<div class="bl" style="animation: fromR .6s 7.5s both;"><span class="bn" style="background: #DDF3F1; color: #0F7C7A;">2</span><span class="bt" style="font-size: 18px;">They review it on the translated site.</span></div>
+<div class="bl" style="animation: fromR .6s 10s both;"><span class="bn" style="background: #DDF3F1; color: #0F7C7A;">3</span><span class="bt" style="font-size: 18px;">Customer needed to fix it? Support starts the customer engagement.</span></div>
+</div>
+</div>
+<div class="win" style="animation: win 17s 21s both;">
+<div class="shot" style="background: #FCE3CC; display: block;"><span class="eb" style="position: absolute; left: 40px; top: 26px; color: #2F7A22; animation: fadeIn .4s 21.6s both;">Fixed by PE</span><div class="wc" style="left: 40px; top: 52px; width: 290px; height: 200px; animation: zoomIn .6s 21.8s both;"><div class="bar"><span class="dot" style="background: #F28B82;"></span><span class="dot" style="background: #F6C453;"></span><span class="dot" style="background: #8FD16F;"></span><span class="url">fr.example.com/offers</span></div><div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;"><div class="ln" style="width: 70%;"></div><div class="ln" style="width: 90%;"></div><div class="ln" style="width: 55%;"></div></div></div><div style="position: absolute; left: 60px; top: 160px; height: 40px; padding: 0 14px; border-radius: 20px; background: #E5F4DE; border: 2px solid #2F7A22; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 900; color: #1F5A16; animation: pop .5s 23s both;"><svg width="20" height="20"><use href="#dc-check"></use></svg>New version</div><svg width="40" height="24" style="position: absolute; left: 338px; top: 140px; animation: fadeIn .4s 24s both;"><path d="M2 12 H36 M28 4 L37 12 L28 20" stroke="#94A3B8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="eb" style="position: absolute; left: 380px; top: 26px; color: #C2410C; animation: fadeIn .4s 24.4s both;">What the customer sees</span><div class="wc" style="left: 380px; top: 52px; width: 290px; height: 200px; animation: zoomIn .6s 24.6s both;"><div class="bar"><span class="dot" style="background: #F28B82;"></span><span class="dot" style="background: #F6C453;"></span><span class="dot" style="background: #8FD16F;"></span><span class="url">fr.example.com/offers</span></div><div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;"><div class="ln" style="width: 70%;"></div><div class="ln" style="width: 90%;"></div><div class="ln" style="width: 55%;"></div><div style="margin-top: 6px; height: 46px; border-radius: 8px; border: 2px dashed #C2410C; background: #FFF7F0; display: flex; align-items: center; gap: 8px; padding: 0 10px; font-size: 13px; font-weight: 900; color: #9A3412; animation: pop .5s 25.6s both;"><svg width="20" height="20" style="flex-shrink: 0;"><use href="#dc-x"></use></svg>Old copy from the CDN cache</div></div></div><div style="position: absolute; left: 40px; top: 290px; width: 630px; height: 80px; border-radius: 20px; background: #0B2545; color: #FFFFFF; display: flex; align-items: center; gap: 18px; padding: 0 30px; animation: up .7s 27s both;"><svg width="30" height="30" style="flex-shrink: 0; color: #8FD16F;"><use href="#dc-mail"></use></svg><span style="font-size: 18px; font-weight: 900;">Action needed: please clear your CDN cache.</span></div></div>
+<div class="tc2">
+<div class="eb" style="color: #0F7C7A;">Reason 2 &middot; 2 of 3</div>
+<div class="tt" style="font-size: 26px;">Example: clear the CDN cache</div>
+<div class="bl" style="animation: fromR .6s 23s both;"><span class="bn" style="background: #DDF3F1; color: #0F7C7A;">1</span><span class="bt" style="font-size: 18px;">PE fixed the translated page.</span></div>
+<div class="bl" style="animation: fromR .6s 25s both;"><span class="bn" style="background: #DDF3F1; color: #0F7C7A;">2</span><span class="bt" style="font-size: 18px;">The customer&rsquo;s CDN still shows an old, cached copy.</span></div>
+<div class="bl" style="animation: fromR .6s 27.5s both;"><span class="bn" style="background: #DDF3F1; color: #0F7C7A;">3</span><span class="bt" style="font-size: 18px;">Ask the customer to clear their CDN cache.</span></div>
+</div>
+</div>
+<div class="win" style="animation: win 17s 38s both;">
+<div class="shot" style="background: #DDF3F1; display: block;"><div style="position: absolute; left: 50px; top: 40px; width: 600px; display: flex; flex-direction: column; gap: 14px;"><div class="row" style="height: 70px; font-size: 18px; animation: up .5s 39s both;"><span style="width: 42px; height: 42px; border-radius: 21px; background: #DDF3F1; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="22" height="22" style="color: #0F7C7A;"><use href="#dc-edit"></use></svg></span>Fix something on their origin site</div><div class="row" style="height: 70px; font-size: 18px; animation: up .5s 40.4s both;"><span style="width: 42px; height: 42px; border-radius: 21px; background: #DDF3F1; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="22" height="22" style="color: #0F7C7A;"><use href="#dc-server"></use></svg></span>Clear their CDN cache</div><div class="row" style="height: 70px; font-size: 18px; animation: up .5s 41.8s both;"><span style="width: 42px; height: 42px; border-radius: 21px; background: #DDF3F1; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="22" height="22" style="color: #0F7C7A;"><use href="#dc-lock"></use></svg></span>Change something only they can access</div></div><div style="position: absolute; left: 50px; top: 316px; width: 600px; height: 70px; border-radius: 20px; background: #0B2545; color: #FFFFFF; display: flex; align-items: center; gap: 18px; padding: 0 30px; animation: up .7s 44s both;"><span style="font-size: 18px; font-weight: 900;">In every case: the fix is on the customer&rsquo;s end.</span></div></div>
+<div class="tc2">
+<div class="eb" style="color: #0F7C7A;">Reason 2 &middot; 3 of 3</div>
+<div class="tt" style="font-size: 26px;">Make them aware action is needed</div>
+<div class="bl" style="animation: fromR .6s 40s both;"><span class="bn" style="background: #DDF3F1; color: #0F7C7A;">1</span><span class="bt" style="font-size: 18px;">Tell the customer what&rsquo;s wrong.</span></div>
+<div class="bl" style="animation: fromR .6s 42s both;"><span class="bn" style="background: #DDF3F1; color: #0F7C7A;">2</span><span class="bt" style="font-size: 18px;">Tell them exactly what they need to do.</span></div>
+<div class="call" style="background: #0B2545; animation: pop .5s 45s both;"><span class="lab" style="color: #FFFFFF; opacity: .8;">Remember</span><span style="font-size: 18px; font-weight: 900; line-height: 1.35;">Your job: start the customer engagement.</span></div>
+</div>
+</div>
+</div>
+</div>
+</template>
+
+<!-- ============ SCENE 3 · EXPLAIN IT ============ -->
+<template id="scene-3">
+<div style="position: absolute; left: 0; top: 72px; width: 1280px; height: 648px;">
+<div class="sh" style="animation: up .6s .2s both;"><div class="h2">Part 3: Explain it simply</div><div class="h2s">Your own words, every detail, a clear call to action.</div></div>
+<div class="sc" style="left: 40px; width: 592px; background: #E3E9F2; color: #0B2545; animation: up .6s 1.4s both, litRing 30s 4s both;"><div class="sr"><span class="sn" style="background: #0B2545;">1</span><span class="tg" style="background: #0B2545;">Rewrite</span></div><div class="st">Don&rsquo;t copy/paste the note</div><svg class="mk" width="28" height="28" style="animation: pop .5s 33.4s both;"><use href="#dc-check"></use></svg></div>
+<div class="sc" style="left: 648px; width: 592px; background: #E5F4DE; color: #2F7A22; animation: up .6s 1.6s both, litRing 30s 34s both;"><div class="sr"><span class="sn" style="background: #2F7A22;">2</span><span class="tg" style="background: #2F7A22;">CXM in CC</span></div><div class="st">Write a simple, clear email</div><svg class="mk" width="28" height="28" style="animation: pop .5s 63.4s both;"><use href="#dc-check"></use></svg></div>
+<div class="panel" style="animation: up .7s 2.2s both;">
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #8A99AD; animation: fadeOut .5s 3.8s forwards;">From internal note to customer email.</div>
+<div class="win" style="animation: win 30s 4s both;">
+<div class="shot" style="background: #FFF1F0; display: block;"><div class="wc" style="left: 40px; top: 28px; width: 620px; height: 230px; padding: 18px 22px; display: flex; flex-direction: column; gap: 8px; animation: zoomIn .6s 4.5s both;"><span class="lab">QA note (internal)</span><div class="mono" style="font-size: 14px; line-height: 1.6; color: #0B2545; font-weight: 600; animation: fadeIn .6s 5.2s both;">AUTOMATION | link-check<br>HTTP 404 on origin: /shop/sale<br>Affects: es, fr (proxied)<br>Repro: nav &gt; Shop &gt; Sale<br>Owner: customer (origin)</div></div><div style="position: absolute; left: 380px; top: 150px; padding: 10px 18px; border-radius: 10px; border: 4px solid #B42318; color: #B42318; background: #FFF1F0; font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: .04em; animation: stamp .6s 9s both;">Don&rsquo;t copy/paste</div><div style="position: absolute; left: 40px; top: 282px; width: 620px; display: flex; flex-direction: column; gap: 10px;"><div class="row" style="height: 46px; font-size: 16px; animation: up .5s 14s both;"><svg width="24" height="24" style="flex-shrink: 0;"><use href="#dc-check"></use></svg>Use it to understand the issue</div><div class="row" style="height: 46px; font-size: 16px; animation: up .5s 16s both;"><svg width="24" height="24" style="flex-shrink: 0;"><use href="#dc-check"></use></svg>Keep every detail: pages, languages, steps</div></div></div>
+<div class="tc2">
+<div class="eb" style="color: #0B2545;">Explain &middot; 1 of 2</div>
+<div class="tt" style="font-size: 26px;">Don&rsquo;t copy/paste their notes</div>
+<div class="bl" style="animation: fromR .6s 6s both;"><span class="bn" style="background: #E3E9F2; color: #0B2545;">1</span><span class="bt" style="font-size: 18px;">QA, PE and TAM notes are written for us, not for the customer.</span></div>
+<div class="bl" style="animation: fromR .6s 12s both;"><span class="bn" style="background: #E3E9F2; color: #0B2545;">2</span><span class="bt" style="font-size: 18px;">Use their note to explain everything in simple terms.</span></div>
+<div class="bl" style="animation: fromR .6s 16s both;"><span class="bn" style="background: #E3E9F2; color: #0B2545;">3</span><span class="bt" style="font-size: 18px;">Don&rsquo;t leave any details out.</span></div>
+</div>
+</div>
+<div class="win" style="animation: win 30s 34s both;">
+<div class="shot" style="background: #E5F4DE; display: block;"><div class="wc" style="left: 40px; top: 30px; width: 620px; height: 346px; animation: zoomIn .6s 34.4s both;"><div style="display: flex; border-bottom: 1px solid #E3E9F2;"><span style="padding: 10px 16px; font-size: 13px; font-weight: 900; color: #1466F0; border-bottom: 3px solid #1466F0;">Email</span><span style="padding: 10px 16px; font-size: 13px; font-weight: 900; color: #5A6B84;">Post</span><span style="padding: 10px 16px; font-size: 13px; font-weight: 900; color: #5A6B84;">Track &amp; Reassign</span></div><div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 6px;"><div style="font-size: 15px; line-height: 1.45; color: #0B2545; animation: fadeIn .5s 35s both;"><b>To:</b> [Customer] &nbsp; <b>CC:</b> [CXM]</div><div style="font-size: 15px; line-height: 1.45; color: #0B2545; animation: fadeIn .5s 36.1s both;">Hi [Name],</div><div style="font-size: 15px; line-height: 1.45; color: #0B2545; animation: fadeIn .5s 37.2s both;">Our quality team found an issue on your English (original) website that also affects your Spanish and French sites.</div><div style="font-size: 15px; line-height: 1.45; color: #0B2545; animation: fadeIn .5s 38.3s both;"><b>The issue:</b> the page www.example.com/shop/sale shows a &ldquo;Page not found&rdquo; error. You can reach it from the menu: Shop &rsaquo; Sale.</div><div style="font-size: 15px; line-height: 1.45; color: #0B2545; animation: fadeIn .5s 39.4s both;"><b>Action needed on your end:</b> please fix or redirect this page on your English site.</div><div style="font-size: 15px; line-height: 1.45; color: #0B2545; animation: fadeIn .5s 40.5s both;">Once it&rsquo;s fixed, reply here and we&rsquo;ll confirm the translated pages look right.</div></div></div></div>
+<div class="tc2">
+<div class="eb" style="color: #2F7A22;">Explain &middot; 2 of 2</div>
+<div class="tt" style="font-size: 26px;">Your email: simple and clear</div>
+<div class="bl" style="animation: fromR .6s 37s both;"><span class="bn" style="background: #E5F4DE; color: #2F7A22;">1</span><span class="bt" style="font-size: 18px;">Simple words, no internal jargon.</span></div>
+<div class="bl" style="animation: fromR .6s 40s both;"><span class="bn" style="background: #E5F4DE; color: #2F7A22;">2</span><span class="bt" style="font-size: 18px;">Every detail: the page, the languages, how to find it.</span></div>
+<div class="bl" style="animation: fromR .6s 43s both;"><span class="bn" style="background: #E5F4DE; color: #2F7A22;">3</span><span class="bt" style="font-size: 18px;">A clear &ldquo;Action needed on your end&rdquo; line.</span></div>
+<div class="call" style="background: #0B2545; animation: pop .5s 48s both;"><span class="lab" style="color: #FFFFFF; opacity: .8;">Always</span><span style="font-size: 18px; font-weight: 900; line-height: 1.35;">Always CC the account&rsquo;s CXM on every customer email.</span></div>
+</div>
+</div>
+</div>
+</div>
+</template>
+
+<!-- ============ SCENE 4 · SET THE CASE ============ -->
+<template id="scene-4">
+<div style="position: absolute; left: 0; top: 72px; width: 1280px; height: 648px;">
+<div class="sh" style="animation: up .6s .2s both;"><div class="h2">Part 4: Set the case</div><div class="h2s">Every Automation case, after you notify the customer.</div></div>
+<div class="sc" style="left: 40px; width: 592px; background: #E5F4DE; color: #2F7A22; animation: up .6s 1.4s both, litRing 20s 4s both;"><div class="sr"><span class="sn" style="background: #2F7A22;">1</span><span class="tg" style="background: #2F7A22;">Standard</span></div><div class="st">Pending + 1 week</div><svg class="mk" width="28" height="28" style="animation: pop .5s 23.4s both;"><use href="#dc-check"></use></svg></div>
+<div class="sc" style="left: 648px; width: 592px; background: #FCE3CC; color: #C2410C; animation: up .6s 1.6s both, litRing 20s 24s both;"><div class="sr"><span class="sn" style="background: #C2410C;">2</span><span class="tg" style="background: #C2410C;">Critical / Express</span></div><div class="st">Pending + next day</div><svg class="mk" width="28" height="28" style="animation: pop .5s 43.4s both;"><use href="#dc-check"></use></svg></div>
+<div class="panel" style="animation: up .7s 2.2s both;">
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #8A99AD; animation: fadeOut .5s 3.8s forwards;">Status and due date.</div>
+<div class="win" style="animation: win 20s 4s both;">
+<div class="shot" style="background: #E5F4DE; display: block;"><div class="wc" style="left: 30px; top: 30px; width: 320px; height: 200px; padding: 18px; display: flex; flex-direction: column; gap: 14px; animation: zoomIn .6s 4.5s both;"><span class="lab">SF case</span><div style="display: flex; align-items: center; gap: 10px;"><span class="lab" style="width: 70px; flex-shrink: 0;">Status</span><div class="fld" style="flex-grow: 1;"><span class="" style="display: inline-block; font-weight: 600; animation: typeIn .8s 6s both;">Pending</span></div></div><div style="display: flex; align-items: center; gap: 10px;"><span class="lab" style="width: 70px; flex-shrink: 0;">Priority</span><div class="fld" style="flex-grow: 1;"><span class="" style="display: inline-block; font-weight: 600;">Standard</span></div></div></div><div class="wc" style="left: 370px; top: 30px; width: 300px; height: 200px; padding: 12px 14px; animation: zoomIn .6s 8s both;"><div style="display: flex; justify-content: space-between;"><span class="lab">Due date</span><span class="lab" style="color: #A9B8CC;">Weekends: skip</span></div><div style="margin-top: 6px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px;"><div style="height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #3B4F6B;">M</div><div style="height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #3B4F6B;">T</div><div style="height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #3B4F6B;">W</div><div style="height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #3B4F6B;">T</div><div style="height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #3B4F6B;">F</div><div style="height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #A9B8CC;">S</div><div style="height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #A9B8CC;">S</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">1</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">2</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">3</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #0B2545; color: #FFFFFF;">4</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">5</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: repeating-linear-gradient(45deg, #EEF1F5 0 6px, #E2E7EE 6px 12px); color: #A9B8CC;">6</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: repeating-linear-gradient(45deg, #EEF1F5 0 6px, #E2E7EE 6px 12px); color: #A9B8CC;">7</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">8</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">9</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">10</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #2F7A22; color: #FFFFFF; animation: pop .5s 11s both;">11</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">12</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: repeating-linear-gradient(45deg, #EEF1F5 0 6px, #E2E7EE 6px 12px); color: #A9B8CC;">13</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: repeating-linear-gradient(45deg, #EEF1F5 0 6px, #E2E7EE 6px 12px); color: #A9B8CC;">14</div></div></div><div style="position: absolute; left: 30px; top: 260px; width: 640px; height: 110px; border-radius: 20px; background: #0B2545; color: #FFFFFF; display: flex; align-items: center; gap: 18px; padding: 0 30px; animation: up .7s 13s both;"><svg width="34" height="34" style="flex-shrink: 0; color: #8FD16F;"><use href="#dc-cal"></use></svg><span style="font-size: 19px; font-weight: 900; line-height: 1.4;">Pending, and the due date moved out 1 week, counting business days only: time for the customer to respond.</span></div></div>
+<div class="tc2">
+<div class="eb" style="color: #2F7A22;">Set the case &middot; 1 of 2</div>
+<div class="tt" style="font-size: 26px;">After you notify the customer</div>
+<div class="bl" style="animation: fromR .6s 6s both;"><span class="bn" style="background: #E5F4DE; color: #2F7A22;">1</span><span class="bt" style="font-size: 18px;">Set the case Status to Pending.</span></div>
+<div class="bl" style="animation: fromR .6s 9s both;"><span class="bn" style="background: #E5F4DE; color: #2F7A22;">2</span><span class="bt" style="font-size: 18px;">Move the due date out 1 week.</span></div>
+<div class="bl" style="animation: fromR .6s 12s both;"><span class="bn" style="background: #E5F4DE; color: #2F7A22;">3</span><span class="bt" style="font-size: 18px;">That gives the customer time to respond.</span></div>
+<div class="call" style="background: #0B2545; animation: pop .5s 16s both;"><span class="lab" style="color: #FFFFFF; opacity: .8;">Always</span><span style="font-size: 18px; font-weight: 900; line-height: 1.35;">Business days only. A due date never lands on a weekend.</span></div>
+</div>
+</div>
+<div class="win" style="animation: win 20s 24s both;">
+<div class="shot" style="background: #FCE3CC; display: block;"><div class="wc" style="left: 30px; top: 30px; width: 320px; height: 200px; padding: 18px; display: flex; flex-direction: column; gap: 14px; animation: zoomIn .6s 24.5s both;"><span class="lab">SF case</span><div style="display: flex; align-items: center; gap: 10px;"><span class="lab" style="width: 70px; flex-shrink: 0;">Status</span><div class="fld" style="flex-grow: 1;"><span class="" style="display: inline-block; font-weight: 600;">Pending</span></div></div><div style="display: flex; align-items: center; gap: 10px;"><span class="lab" style="width: 70px; flex-shrink: 0;">Priority</span><div class="fld" style="flex-grow: 1;"><span class="" style="display: inline-block; font-weight: 600; animation: typeIn .8s 26s both;"><b style="color: #B42318;">Critical / Express</b></span></div></div></div><div class="wc" style="left: 370px; top: 30px; width: 300px; height: 200px; padding: 12px 14px; animation: zoomIn .6s 28s both;"><div style="display: flex; justify-content: space-between;"><span class="lab">Due date</span><span class="lab" style="color: #A9B8CC;">Weekends: skip</span></div><div style="margin-top: 6px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px;"><div style="height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #3B4F6B;">M</div><div style="height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #3B4F6B;">T</div><div style="height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #3B4F6B;">W</div><div style="height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #3B4F6B;">T</div><div style="height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #3B4F6B;">F</div><div style="height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #A9B8CC;">S</div><div style="height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #A9B8CC;">S</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">1</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">2</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">3</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">4</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #0B2545; color: #FFFFFF;">5</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: repeating-linear-gradient(45deg, #EEF1F5 0 6px, #E2E7EE 6px 12px); color: #A9B8CC;">6</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: repeating-linear-gradient(45deg, #EEF1F5 0 6px, #E2E7EE 6px 12px); color: #A9B8CC;">7</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #C2410C; color: #FFFFFF; animation: pop .5s 31s both;">8</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">9</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">10</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">11</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: #F3F6FB; color: #3B4F6B;">12</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: repeating-linear-gradient(45deg, #EEF1F5 0 6px, #E2E7EE 6px 12px); color: #A9B8CC;">13</div><div style="height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; background: repeating-linear-gradient(45deg, #EEF1F5 0 6px, #E2E7EE 6px 12px); color: #A9B8CC;">14</div></div></div><div style="position: absolute; left: 30px; top: 260px; width: 640px; height: 110px; border-radius: 20px; background: #7C2D12; color: #FFFFFF; display: flex; align-items: center; gap: 18px; padding: 0 30px; animation: up .7s 33s both;"><svg width="34" height="34" style="flex-shrink: 0; color: #F6C453;"><use href="#dc-warn"></use></svg><span style="font-size: 19px; font-weight: 900; line-height: 1.4;">Critical or Express? Next business day only: a Friday moves to Monday, never a weekend.</span></div></div>
+<div class="tc2">
+<div class="eb" style="color: #C2410C;">Set the case &middot; 2 of 2</div>
+<div class="tt" style="font-size: 26px;">Critical or Express cases</div>
+<div class="bl" style="animation: fromR .6s 26s both;"><span class="bn" style="background: #FCE3CC; color: #C2410C;">1</span><span class="bt" style="font-size: 18px;">Still set the Status to Pending.</span></div>
+<div class="bl" style="animation: fromR .6s 29s both;"><span class="bn" style="background: #FCE3CC; color: #C2410C;">2</span><span class="bt" style="font-size: 18px;">Move the due date to the next business day only.</span></div>
+<div class="call" style="background: #0B2545; animation: pop .5s 34s both;"><span class="lab" style="color: #FFFFFF; opacity: .8;">Business days</span><span style="font-size: 18px; font-weight: 900; line-height: 1.35;">Friday? The next business day is Monday, not Saturday.</span></div>
+</div>
+</div>
+</div>
+</div>
+</template>
+
+<!-- ============ SCENE 5 · NO RESPONSE ============ -->
+<template id="scene-5">
+<div style="position: absolute; left: 0; top: 72px; width: 1280px; height: 648px;">
+<div class="sh" style="animation: up .6s .2s both;"><div class="h2">Part 5: When the customer doesn&rsquo;t respond</div><div class="h2s">Keep it open, then involve QA.</div></div>
+<div class="sc" style="left: 40px; width: 288px; background: #DCE7F7; color: #1466F0; animation: up .6s 1.4s both, litRing 18s 4s both;"><div class="sr"><span class="sn" style="background: #1466F0;">1</span><span class="tg" style="background: #1466F0;">Waiting</span></div><div class="st">The case stays open</div><svg class="mk" width="28" height="28" style="animation: pop .5s 21.4s both;"><use href="#dc-check"></use></svg></div>
+<div class="sc" style="left: 344px; width: 288px; background: #FCE3CC; color: #C2410C; animation: up .6s 1.6s both, litRing 18s 22s both;"><div class="sr"><span class="sn" style="background: #C2410C;">2</span><span class="tg" style="background: #C2410C;">Weeks</span></div><div class="st">Send it back to QA</div><svg class="mk" width="28" height="28" style="animation: pop .5s 39.4s both;"><use href="#dc-check"></use></svg></div>
+<div class="sc" style="left: 648px; width: 288px; background: #DDF3F1; color: #0F7C7A; animation: up .6s 1.8s both, litRing 18s 40s both;"><div class="sr"><span class="sn" style="background: #0F7C7A;">3</span><span class="tg" style="background: #0F7C7A;">QA</span></div><div class="st">What QA does next</div><svg class="mk" width="28" height="28" style="animation: pop .5s 57.4s both;"><use href="#dc-check"></use></svg></div>
+<div class="sc" style="left: 952px; width: 288px; background: #FCE3CC; color: #C2410C; animation: up .6s 2s both, litRing 18s 58s both;"><div class="sr"><span class="sn" style="background: #C2410C;">4</span><span class="tg" style="background: #C2410C;">QA first</span></div><div class="st">Extremely overdue</div><svg class="mk" width="28" height="28" style="animation: pop .5s 75.4s both;"><use href="#dc-check"></use></svg></div>
+<div class="panel" style="animation: up .7s 2.2s both;">
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #8A99AD; animation: fadeOut .5s 3.8s forwards;">No reply from the customer.</div>
+<div class="win" style="animation: win 18s 4s both;">
+<div class="shot" style="background: #DCE7F7; display: block;"><div style="position: absolute; left: 40px; top: 40px; width: 620px; display: flex; gap: 12px;"><div style="flex: 1; height: 90px; border-radius: 12px; background: #FFFFFF; border: 2px solid #CBD2DC; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; animation: up .5s 5s both;"><span class="lab">Week 1</span><span style="font-size: 14px; font-weight: 900; color: #9A3412;">No reply</span></div><div style="flex: 1; height: 90px; border-radius: 12px; background: #FFFFFF; border: 2px solid #CBD2DC; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; animation: up .5s 6.2s both;"><span class="lab">Week 2</span><span style="font-size: 14px; font-weight: 900; color: #9A3412;">No reply</span></div><div style="flex: 1; height: 90px; border-radius: 12px; background: #FFFFFF; border: 2px solid #CBD2DC; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; animation: up .5s 7.4s both;"><span class="lab">Week 3</span><span style="font-size: 14px; font-weight: 900; color: #9A3412;">No reply</span></div></div><div style="position: absolute; left: 40px; top: 160px; width: 620px; height: 100px; border-radius: 16px; background: #DCE7F7; border: 3px solid #1466F0; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 6px; animation: pop .55s 9s both;"><span class="disp" style="font-size: 19px; font-weight: 700; color: #0B2545; line-height: 1.25;">Case stays open</span><span style="font-size: 15px; font-weight: 700; color: #3B4F6B; line-height: 1.35;">An Automation case stays open until the customer confirms it&rsquo;s resolved.</span></div><div style="position: absolute; left: 40px; top: 284px; width: 620px; display: flex; justify-content: center; animation: up .5s 13s both;"><span class="ch" style="height: 50px; font-size: 17px; color: #0B2545; box-shadow: 0 6px 16px rgba(11,37,69,.10);">Keep an eye on overdue cases</span></div></div>
+<div class="tc2">
+<div class="eb" style="color: #C2410C;">No response &middot; 1 of 4</div>
+<div class="tt" style="font-size: 26px;">The customer doesn&rsquo;t reply</div>
+<div class="bl" style="animation: fromR .6s 6s both;"><span class="bn" style="background: #FCE3CC; color: #C2410C;">1</span><span class="bt" style="font-size: 18px;">The case stays open, waiting on the customer.</span></div>
+<div class="bl" style="animation: fromR .6s 10s both;"><span class="bn" style="background: #FCE3CC; color: #C2410C;">2</span><span class="bt" style="font-size: 18px;">Keep an eye on cases that go overdue.</span></div>
+</div>
+</div>
+<div class="win" style="animation: win 18s 22s both;">
+<div class="shot" style="background: #FCE3CC; display: block;"><div class="wc" style="left: 30px; top: 18px; width: 640px; height: 290px; animation: zoomIn .6s 22.4s both;"><div style="display: flex; border-bottom: 1px solid #E3E9F2;"><span style="padding: 10px 14px; font-size: 13px; font-weight: 900; color: #5A6B84;">Email</span><span style="padding: 10px 14px; font-size: 13px; font-weight: 900; color: #5A6B84;">Post</span><span style="padding: 10px 14px; font-size: 13px; font-weight: 900; color: #1466F0; border-bottom: 3px solid #1466F0;">Track &amp; Reassign</span></div><div style="padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;"><div style="display: flex; align-items: center; gap: 10px;"><span class="lab" style="width: 90px; flex-shrink: 0;">Assign to</span><div class="fld" style="flex-grow: 1;"><span class="" style="display: inline-block; font-weight: 600; animation: typeIn .8s 23.4s both;">[QA name] &middot; created this case</span></div></div><div style="font-size: 15px; line-height: 1.45; color: #0B2545; animation: fadeIn .5s 25s both;"><b>Note to QA:</b> We notified the customer on <b>[date]</b>, and there&rsquo;s been no feedback for a few weeks.</div><div style="font-size: 15px; line-height: 1.45; color: #0B2545; animation: fadeIn .5s 26.4s both;">Please exclude the <b>[script name]</b> script for this customer, or modify it to skip this flow.</div><span class="ch" style="align-self: flex-end; height: 38px; background: #1466F0; color: #FFFFFF; font-size: 14px; animation: press .4s 28.5s both;">Send back to QA</span></div></div><div style="position: absolute; left: 150px; top: 322px; width: 520px; border-radius: 12px; background: #FFFFFF; box-shadow: 0 10px 24px rgba(11,37,69,.16); overflow: hidden; display: flex; align-items: stretch; animation: fromR .6s 31s both;"><div style="width: 112px; background: #464EB8; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; padding: 6px;"><span>Teams</span><span style="color: #FCD9B6;">Critical only</span></div><div style="padding: 10px 14px; font-size: 15px; font-weight: 700; color: #0B2545; line-height: 1.4;">Sent you Critical case <b>[Case #]</b>, please take a look.</div></div></div>
+<div class="tc2">
+<div class="eb" style="color: #C2410C;">No response &middot; 2 of 4</div>
+<div class="tt" style="font-size: 26px;">A few weeks, no feedback?</div>
+<div class="bl" style="animation: fromR .6s 23.5s both;"><span class="bn" style="background: #FCE3CC; color: #C2410C;">1</span><span class="bt" style="font-size: 18px;">Send the case back to the QA person who created it.</span></div>
+<div class="bl" style="animation: fromR .6s 26s both;"><span class="bn" style="background: #FCE3CC; color: #C2410C;">2</span><span class="bt" style="font-size: 18px;">Add a note: no feedback, so exclude the script or modify it to skip that flow.</span></div>
+<div class="bl" style="animation: fromR .6s 31s both;"><span class="bn" style="background: #FCE3CC; color: #C2410C;">3</span><span class="bt" style="font-size: 18px;">Critical? Also alert the QA person on Teams.</span></div>
+</div>
+</div>
+<div class="win" style="animation: win 18s 40s both;">
+<div class="shot" style="background: #DDF3F1; display: block;"><div style="position: absolute; left: 30px; top: 140px; width: 170px; height: 120px; border-radius: 16px; background: #FCE3CC; border: 3px solid #C2410C; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 6px; animation: pop .55s 40.8s both; align-items: center; text-align: center;"><svg width="30" height="30" style="color: #C2410C;"><use href="#dc-server"></use></svg><span class="disp" style="font-size: 19px; font-weight: 700; color: #0B2545; line-height: 1.25;">QA</span><span style="font-size: 15px; font-weight: 700; color: #3B4F6B; line-height: 1.35;">Reviews your request</span></div><svg width="70" height="250" style="position: absolute; left: 204px; top: 76px; animation: fadeIn .4s 42s both;"><g stroke="#94A3B8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 124 Q36 124 36 64 Q36 34 62 34"></path><path d="M54 26 L64 34 L54 42"></path><path d="M4 124 Q36 124 36 184 Q36 214 62 214"></path><path d="M54 206 L64 214 L54 222"></path></g></svg><div style="position: absolute; left: 280px; top: 40px; width: 390px; height: 120px; border-radius: 16px; background: #DDF3F1; border: 3px solid #0F7C7A; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 6px; animation: pop .55s 42.6s both;"><span class="disp" style="font-size: 19px; font-weight: 700; color: #0B2545; line-height: 1.25;">Bring it to the CXM&rsquo;s attention</span><span style="font-size: 15px; font-weight: 700; color: #3B4F6B; line-height: 1.35;">If needed.</span></div><span style="position: absolute; left: 448px; top: 176px; font-size: 15px; font-weight: 900; color: #5A6B84; animation: fadeIn .4s 44s both;">or</span><div style="position: absolute; left: 280px; top: 220px; width: 390px; height: 140px; border-radius: 16px; background: #E5F4DE; border: 3px solid #2F7A22; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 6px; animation: pop .55s 44.6s both;"><span class="disp" style="font-size: 19px; font-weight: 700; color: #0B2545; line-height: 1.25;">Adjust the script and close the case</span><span style="font-size: 15px; font-weight: 700; color: #3B4F6B; line-height: 1.35;">Status set to Closed, with clear notes in the SF case through a Post.</span></div></div>
+<div class="tc2">
+<div class="eb" style="color: #0F7C7A;">No response &middot; 3 of 4</div>
+<div class="tt" style="font-size: 26px;">What QA does next</div>
+<div class="bl" style="animation: fromR .6s 42.6s both;"><span class="bn" style="background: #DDF3F1; color: #0F7C7A;">1</span><span class="bt" style="font-size: 18px;">QA can bring it to the CXM&rsquo;s attention, if needed.</span></div>
+<div class="bl" style="animation: fromR .6s 44.6s both;"><span class="bn" style="background: #DDF3F1; color: #0F7C7A;">2</span><span class="bt" style="font-size: 18px;">Or QA adjusts the script and sets the case to Closed.</span></div>
+<div class="call" style="background: #0B2545; animation: pop .5s 48s both;"><span class="lab" style="color: #FFFFFF; opacity: .8;">Notes</span><span style="font-size: 18px; font-weight: 900; line-height: 1.35;">Clear notes in the SF case, through a Post.</span></div>
+</div>
+</div>
+<div class="win" style="animation: win 18s 58s both;">
+<div class="shot" style="background: #FFF1F0; display: block;"><div style="position: absolute; left: 30px; top: 130px; width: 190px; height: 130px; border-radius: 16px; background: #FFF1F0; border: 3px solid #B42318; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 6px; animation: pop .55s 58.8s both;"><svg width="30" height="30"><use href="#dc-clock"></use></svg><span class="disp" style="font-size: 19px; font-weight: 700; color: #0B2545; line-height: 1.25;">Extremely overdue</span><span style="font-size: 15px; font-weight: 700; color: #3B4F6B; line-height: 1.35;">Customer not interested or engaged</span></div><svg width="40" height="24" style="position: absolute; left: 226px; top: 183px; animation: fadeIn .4s 60.4s both;"><path d="M2 12 H36 M28 4 L37 12 L28 20" stroke="#94A3B8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg><div style="position: absolute; left: 272px; top: 130px; width: 190px; height: 130px; border-radius: 16px; background: #FCE3CC; border: 3px solid #C2410C; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 6px; animation: pop .55s 61s both;"><svg width="30" height="30" style="color: #C2410C;"><use href="#dc-phone"></use></svg><span class="disp" style="font-size: 19px; font-weight: 700; color: #0B2545; line-height: 1.25;">QA person first</span><span style="font-size: 15px; font-weight: 700; color: #3B4F6B; line-height: 1.35;">Bring it up to them</span></div><svg width="40" height="24" style="position: absolute; left: 468px; top: 183px; animation: fadeIn .4s 62.6s both;"><path d="M2 12 H36 M28 4 L37 12 L28 20" stroke="#94A3B8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg><div style="position: absolute; left: 514px; top: 130px; width: 156px; height: 130px; border-radius: 16px; background: #E5F4DE; border: 3px solid #2F7A22; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 6px; animation: pop .55s 63.2s both;"><svg width="30" height="30"><use href="#dc-check"></use></svg><span class="disp" style="font-size: 19px; font-weight: 700; color: #0B2545; line-height: 1.25;">Then close it</span></div></div>
+<div class="tc2">
+<div class="eb" style="color: #C2410C;">No response &middot; 4 of 4</div>
+<div class="tt" style="font-size: 26px;">Extremely overdue and not engaged</div>
+<div class="bl" style="animation: fromR .6s 60s both;"><span class="bn" style="background: #FCE3CC; color: #C2410C;">1</span><span class="bt" style="font-size: 18px;">These cases need to be closed too.</span></div>
+<div class="bl" style="animation: fromR .6s 62s both;"><span class="bn" style="background: #FCE3CC; color: #C2410C;">2</span><span class="bt" style="font-size: 18px;">Bring it up to the QA person first.</span></div>
+<div class="bl" style="animation: fromR .6s 64s both;"><span class="bn" style="background: #FCE3CC; color: #C2410C;">3</span><span class="bt" style="font-size: 18px;">Then close the case.</span></div>
+<div class="call" style="background: #0B2545; animation: pop .5s 67s both;"><span class="lab" style="color: #FFFFFF; opacity: .8;">Remember</span><span style="font-size: 18px; font-weight: 900; line-height: 1.35;">Never close one without talking to QA first.</span></div>
+</div>
+</div>
+</div>
+</div>
+</template>
+
+<!-- ============ SCENE 6 · PRACTICE ============ -->
+<template id="scene-6">
+<div style="position: absolute; left: 0; top: 72px; width: 1280px; height: 648px;">
+<div class="sh" style="animation: up .6s .2s both;"><div class="h2">Part 6: Practice. What would you do?</div><div class="h2s">Think of your answer before it appears.</div></div>
+<div style="position: absolute; left: 160px; top: 80px; width: 960px; height: 520px; animation: win 10s 4s both;"><div class="wc" style="left: 0; top: 0; width: 960px; height: 190px; padding: 26px 32px; display: flex; flex-direction: column; gap: 12px;"><span class="lab">Case 1</span><span class="disp" style="font-size: 26px; font-weight: 600; color: #0B2545; line-height: 1.35;">An Automation case: QA&rsquo;s script found a broken link on the customer&rsquo;s origin site. It also shows on their translated sites.</span></div><div style="position: absolute; left: 0; top: 220px; width: 960px; min-height: 120px; border-radius: 18px; background: #E5F4DE; border: 3px solid #2F7A22; padding: 22px 28px; display: flex; align-items: center; gap: 18px; animation: pop .5s 9s both;"><svg width="40" height="40" style="flex-shrink: 0;"><use href="#dc-check"></use></svg><span style="font-size: 23px; font-weight: 900; color: #0B2545; line-height: 1.4;">Explain it in simple words, ask them to fix it on their origin site, CC the CXM. Then Pending + 1 week.</span></div></div>
+<div style="position: absolute; left: 160px; top: 80px; width: 960px; height: 520px; animation: win 10s 14s both;"><div class="wc" style="left: 0; top: 0; width: 960px; height: 190px; padding: 26px 32px; display: flex; flex-direction: column; gap: 12px;"><span class="lab">Case 2</span><span class="disp" style="font-size: 26px; font-weight: 600; color: #0B2545; line-height: 1.35;">PE fixed a translated page, but the customer still sees the old version.</span></div><div style="position: absolute; left: 0; top: 220px; width: 960px; min-height: 120px; border-radius: 18px; background: #DDF3F1; border: 3px solid #0F7C7A; padding: 22px 28px; display: flex; align-items: center; gap: 18px; animation: pop .5s 19s both;"><svg width="40" height="40" style="flex-shrink: 0;"><use href="#dc-check"></use></svg><span style="font-size: 23px; font-weight: 900; color: #0B2545; line-height: 1.4;">Ask the customer to clear their CDN cache, in simple words, with the CXM in CC.</span></div></div>
+<div style="position: absolute; left: 160px; top: 80px; width: 960px; height: 520px; animation: win 10s 24s both;"><div class="wc" style="left: 0; top: 0; width: 960px; height: 190px; padding: 26px 32px; display: flex; flex-direction: column; gap: 12px;"><span class="lab">Case 3</span><span class="disp" style="font-size: 26px; font-weight: 600; color: #0B2545; line-height: 1.35;">You&rsquo;re about to paste the QA note straight into your email.</span></div><div style="position: absolute; left: 0; top: 220px; width: 960px; min-height: 120px; border-radius: 18px; background: #E3E9F2; border: 3px solid #0B2545; padding: 22px 28px; display: flex; align-items: center; gap: 18px; animation: pop .5s 29s both;"><svg width="40" height="40" style="flex-shrink: 0;"><use href="#dc-check"></use></svg><span style="font-size: 23px; font-weight: 900; color: #0B2545; line-height: 1.4;">Don&rsquo;t. Rewrite it in simple words, keep every detail, and add a clear &ldquo;action needed&rdquo; line.</span></div></div>
+<div style="position: absolute; left: 160px; top: 80px; width: 960px; height: 520px; animation: win 10s 34s both;"><div class="wc" style="left: 0; top: 0; width: 960px; height: 190px; padding: 26px 32px; display: flex; flex-direction: column; gap: 12px;"><span class="lab">Case 4</span><span class="disp" style="font-size: 26px; font-weight: 600; color: #0B2545; line-height: 1.35;">The case is Critical. You just emailed the customer.</span></div><div style="position: absolute; left: 0; top: 220px; width: 960px; min-height: 120px; border-radius: 18px; background: #FCE3CC; border: 3px solid #C2410C; padding: 22px 28px; display: flex; align-items: center; gap: 18px; animation: pop .5s 39s both;"><svg width="40" height="40" style="flex-shrink: 0;"><use href="#dc-check"></use></svg><span style="font-size: 23px; font-weight: 900; color: #0B2545; line-height: 1.4;">Set it to Pending and move the due date to the next business day.</span></div></div>
+<div style="position: absolute; left: 160px; top: 80px; width: 960px; height: 520px; animation: win 10s 44s both;"><div class="wc" style="left: 0; top: 0; width: 960px; height: 190px; padding: 26px 32px; display: flex; flex-direction: column; gap: 12px;"><span class="lab">Case 5</span><span class="disp" style="font-size: 26px; font-weight: 600; color: #0B2545; line-height: 1.35;">Three weeks, no reply on an Automation case.</span></div><div style="position: absolute; left: 0; top: 220px; width: 960px; min-height: 120px; border-radius: 18px; background: #FCE3CC; border: 3px solid #C2410C; padding: 22px 28px; display: flex; align-items: center; gap: 18px; animation: pop .5s 49s both;"><svg width="40" height="40" style="flex-shrink: 0;"><use href="#dc-check"></use></svg><span style="font-size: 23px; font-weight: 900; color: #0B2545; line-height: 1.4;">Send the case back to the QA person who created it, with a note: exclude the script or skip that flow.</span></div></div>
+<div style="position: absolute; left: 160px; top: 80px; width: 960px; height: 520px; animation: win 10s 54s both;"><div class="wc" style="left: 0; top: 0; width: 960px; height: 190px; padding: 26px 32px; display: flex; flex-direction: column; gap: 12px;"><span class="lab">Case 6</span><span class="disp" style="font-size: 26px; font-weight: 600; color: #0B2545; line-height: 1.35;">The case is extremely overdue, and the customer isn&rsquo;t engaged.</span></div><div style="position: absolute; left: 0; top: 220px; width: 960px; min-height: 120px; border-radius: 18px; background: #FCE3CC; border: 3px solid #C2410C; padding: 22px 28px; display: flex; align-items: center; gap: 18px; animation: pop .5s 59s both;"><svg width="40" height="40" style="flex-shrink: 0;"><use href="#dc-check"></use></svg><span style="font-size: 23px; font-weight: 900; color: #0B2545; line-height: 1.4;">Bring it up to the QA person first, then close the case.</span></div></div>
+</div>
+</template>
+
+<!-- ============ SCENE 7 · RECAP ============ -->
+<template id="scene-7">
+<div style="position: absolute; left: 0; top: 72px; width: 1280px; height: 648px;">
+<div class="sh" style="animation: up .6s .2s both;"><div class="h2">Recap: cases from QA</div><div class="h2s">Explain it simply, set the case, follow through.</div></div>
+<div style="position: absolute; left: 40px; top: 66px; width: 680px; height: 566px; border-radius: 20px; background: #DCE7F7; padding: 18px; display: flex; flex-direction: column; gap: 10px; animation: pop .55s 1s both;"><span class="disp" style="font-size: 22px; font-weight: 700; color: #0B2545; margin-bottom: 4px;">Remember</span><div class="row" style="height: 70px; font-size: 16px; font-weight: 700; line-height: 1.35; animation: up .5s 2.5s both;"><span class="sn" style="background: #1466F0;">1</span><span><b>Automation cases:</b> origin site defects that affect the translated sites</span></div><div class="row" style="height: 70px; font-size: 16px; font-weight: 700; line-height: 1.35; animation: up .5s 4.7s both;"><span class="sn" style="background: #1466F0;">2</span><span><b>Customer action:</b> after a PE or TAM review, like clearing the CDN cache</span></div><div class="row" style="height: 70px; font-size: 16px; font-weight: 700; line-height: 1.35; animation: up .5s 6.9s both;"><span class="sn" style="background: #1466F0;">3</span><span><b>Explain it simply:</b> no copy/paste, every detail, clear &ldquo;action needed&rdquo;</span></div><div class="row" style="height: 70px; font-size: 16px; font-weight: 700; line-height: 1.35; animation: up .5s 9.1s both;"><span class="sn" style="background: #1466F0;">4</span><span><b>Always CC the CXM</b> on every customer email</span></div><div class="row" style="height: 70px; font-size: 16px; font-weight: 700; line-height: 1.35; animation: up .5s 11.3s both;"><span class="sn" style="background: #1466F0;">5</span><span><b>Pending + 1 week</b>, business days only (Critical/Express: next business day)</span></div><div class="row" style="height: 70px; font-size: 16px; font-weight: 700; line-height: 1.35; animation: up .5s 13.5s both;"><span class="sn" style="background: #1466F0;">6</span><span><b>Keep Automation cases open</b> until the customer confirms</span></div></div>
+<div style="position: absolute; left: 744px; top: 66px; width: 496px; height: 196px; border-radius: 20px; background: #E5F4DE; border: 3px solid #2F7A22; padding: 18px 22px; display: flex; flex-direction: column; gap: 8px; animation: pop .55s 17s both;"><div style="display: flex; align-items: center; gap: 10px;"><svg width="30" height="30"><use href="#dc-check"></use></svg><span class="disp" style="font-size: 21px; font-weight: 700; color: #0B2545;">The main mission</span></div><span style="font-size: 17px; font-weight: 700; color: #1F5A16; line-height: 1.45;">Simple words, and a clear message that this needs action on the customer&rsquo;s end.</span></div>
+<div style="position: absolute; left: 744px; top: 282px; width: 496px; height: 164px; border-radius: 20px; background: #FCE3CC; border: 3px solid #C2410C; padding: 18px 22px; display: flex; flex-direction: column; gap: 8px; animation: pop .55s 23s both;"><div style="display: flex; align-items: center; gap: 10px;"><svg width="30" height="30"><use href="#dc-warn"></use></svg><span class="disp" style="font-size: 21px; font-weight: 700; color: #0B2545;">No reply?</span></div><span style="font-size: 16px; font-weight: 700; color: #9A3412; line-height: 1.45;">Weeks without feedback: send the case back to QA with a note. Extremely overdue: talk to the QA person first, then close.</span></div>
+<div style="position: absolute; left: 744px; top: 466px; width: 496px; height: 166px; border-radius: 20px; background: #0B2545; color: #FFFFFF; display: flex; align-items: center; gap: 16px; padding: 0 26px; animation: pop .6s 31s both;"><svg width="44" height="44" style="color: #8FD16F; flex-shrink: 0;"><use href="#dc-clock"></use></svg><div style="display: flex; flex-direction: column; gap: 6px;"><span class="disp" style="font-size: 24px; font-weight: 700;">Thanks for watching!</span><span style="font-size: 15px; color: #C9D6E8;">Explain it simply, set the case, follow through.</span></div></div>
+</div>
+</template>
+
+<div id="sceneHost" style="position: absolute; inset: 0;"></div>
+
+<!-- ============ COVER ============ -->
+<div id="cover">
+<div style="position: absolute; inset: 0; background: #0B2545; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; text-align: center; color: #FFFFFF;">
+<div style="font-size: 16px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: #8FD16F;">MotionPoint Support &middot; New Agent Training</div>
+<h1 class="disp" style="margin: 0; font-size: 64px; line-height: 1.05; font-weight: 700;">Why QA Sends You Cases</h1>
+<p style="margin: 0; font-size: 22px; color: #C9D6E8; max-width: 800px;">Why MotionPoint QA opens cases for Support, how to explain them to the customer, and how to set and follow up the case. About 7 minutes, with background music.</p>
+<button type="button" id="coverPlay" style="margin-top: 14px; height: 72px; padding: 0 40px; border-radius: 36px; border: none; background: #1466F0; color: #FFFFFF; font-family: 'Lexend', sans-serif; font-size: 26px; font-weight: 600; display: flex; align-items: center; gap: 14px; cursor: pointer; box-shadow: 0 16px 40px rgba(20,102,240,.45);">
+<svg width="26" height="26" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="#FFFFFF"></path></svg>Play</button>
+</div>
+</div>
+
+</div>
+
+<!-- ===================== SUBTITLES ===================== -->
+<div style="height: 70px; flex-shrink: 0; background: #0B1626; display: flex; align-items: center; justify-content: center; padding: 0 48px; position: relative; overflow: hidden;">
+<div id="subs" style="display: contents;"></div>
+</div>
+
+<!-- ===================== CONTROLS ===================== -->
+<div style="height: 80px; flex-shrink: 0; background: #0E1B2E; display: flex; flex-direction: column;">
+<div style="height: 6px; background: #1D2E48;"><div id="prog" style="height: 6px; width: 0%; background: #5DB645;"></div></div>
+<div style="flex-grow: 1; display: flex; align-items: center; gap: 10px; padding: 0 20px;">
+<button type="button" class="ctl main" id="playBtn" aria-label="Play">
+<span id="icoPause" style="display: contents;" hidden><svg width="18" height="18" viewBox="0 0 24 24"><rect x="6" y="4.5" width="4" height="15" rx="1" fill="#FFFFFF"></rect><rect x="14" y="4.5" width="4" height="15" rx="1" fill="#FFFFFF"></rect></svg></span>
+<span id="icoPlay" style="display: contents;"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="#FFFFFF"></path></svg></span>
+<span id="playLabel">Play</span>
+</button>
+<button type="button" class="ctl" id="replayBtn" aria-label="Replay from start">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E6EEF8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 4v5h5"></path></svg>
+</button>
+<button type="button" class="ctl" id="back10Btn" aria-label="Back 10 seconds" title="Back 10 seconds (Left arrow)">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E6EEF8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 17l-5-5 5-5"></path><path d="M18 17l-5-5 5-5"></path></svg>
+<span>10s</span>
+</button>
+<button type="button" class="ctl" id="fwd10Btn" aria-label="Forward 10 seconds" title="Forward 10 seconds (Right arrow)">
+<span>10s</span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E6EEF8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 17l5-5-5-5"></path><path d="M6 17l5-5-5-5"></path></svg>
+</button>
+<button type="button" class="ctl" id="musicBtn" aria-label="Music on" aria-pressed="true">
+<span id="icoMusicOn" style="display: contents;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8FD16F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="17" cy="16" r="3"></circle></svg></span>
+<span id="icoMusicOff" style="display: contents;" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A9B8CC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="17" cy="16" r="3"></circle><path d="M3 3l18 18"></path></svg></span>
+<span id="musicLabel" style="display:none">Music on</span>
+</button>
+<button type="button" class="ctl" id="subsBtn" aria-label="Hide captions" aria-pressed="true">
+<svg width="22" height="18" viewBox="0 0 26 20" fill="none" id="subsIcon" stroke="#8FD16F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="1.5" width="23" height="17" rx="3"></rect><path d="M11 8.2a3 3 0 1 0 0 3.6"></path><path d="M19 8.2a3 3 0 1 0 0 3.6"></path></svg>
+</button>
+<button type="button" class="ctl" id="prevBtn" aria-label="Previous scene">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E6EEF8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>
+</button>
+<button type="button" class="ctl" id="nextBtn" aria-label="Next scene">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E6EEF8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+<div style="width: 1px; height: 30px; background: #2A3E5C; margin: 0 4px;"></div>
+<div style="display: flex; gap: 4px; flex-grow: 1; overflow: hidden;">
+<span id="chapters" style="display: contents;"></span>
+</div>
+<div style="font-size: 14px; font-weight: 700; color: #A9B8CC; white-space: nowrap; font-variant-numeric: tabular-nums;" id="timeLabel">0:00</div>
+</div>
+</div>
+
+
+</div>
+</div>
+<script>
+const STEP_HTML = "<div style=\"height: 52px; padding: 0 18px 0 6px; border-radius: 26px; background: #0B2545; color: #FFFFFF; display: flex; align-items: center; gap: 10px; box-shadow: 0 6px 16px rgba(11,37,69,.22); animation: pop 0.78s ease both;\">\n<span class=\"disp\" style=\"width: 40px; height: 40px; border-radius: 20px; background: #5DB645; color: #0B2545; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700;\">{{st.n}}</span>\n<span style=\"font-size: 15px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase;\">Part {{st.n}} of 7</span>\n</div>";
+const SUB_OPEN = "<div style=\"position: absolute; left: 48px; right: 48px; top: 0; height: 70px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 22px; line-height: 1.3; font-weight: 700; color: #F4F7FB; animation: up 0.7s ease both;\">";
+function fit(){ const s = Math.min(window.innerWidth / 1280, window.innerHeight / 870); document.getElementById('fit').style.transform = 'scale(' + s + ')'; }
+window.addEventListener('resize', fit); fit();
+class Player {
+  constructor() {
+    this.state = { scene: 0, el: 0, playing: false, started: false, ended: false, music: true, subsOn: true };
+    this.ctx = null;
+  }
+  durs() { return [24000, 46000, 57000, 66000, 46000, 78000, 66000, 40000]; }
+  subLines() {
+    return [[[0, "Welcome! Sometimes you'll get a case from MotionPoint's internal QA team. This video shows why, and what to do."], [6000, "There are two reasons: Automation cases, and issues that need the customer's action after a PE or TAM review."], [11000, "You'll explain it in simple words, with the CXM in CC, and then set the case to Pending with a new due date."], [16000, "Your mission: tell the customer, in simple words, that this needs action on their end."]],
+      [[0, "Part 1: Automation cases. This is reason one."], [2000, "QA's automated scripts check the sites and report what they find."], [5000, "Sometimes they find a defect on the customer's origin site, the original English site."], [9000, "Translated sites are built from the origin site, so the same defect shows on every translated site too."], [20000, "For these, QA opens an Automation case, to let us know about the origin site defect."], [30000, "Automation cases must stay open until the customer confirms the issue is resolved."], [40000, "Only the customer can fix it, because it's on their side."]],
+      [[0, "Part 2: customer action needed. This is reason two."], [4000, "QA can report anything to a PE or the TAM, who review it on the translated site."], [10000, "If the customer is at fault, or is needed to resolve it, Support typically gets the case to start the customer engagement."], [21000, "For example: PE fixed the translated page, but the customer's CDN still shows an old, cached copy."], [27000, "So we ask the customer to clear their CDN cache."], [38000, "Other times, they need to fix something on their origin site, or change something only they can access."], [45000, "Either way, make them aware that action is needed on their end. Your job is to start the customer engagement."]],
+      [[0, "Part 3: explain it simply."], [4000, "QA, PE and TAM notes are written for us, not for the customer. So don't just copy and paste them."], [12000, "Use their note to understand the issue, and to explain everything in simple terms."], [16000, "And don't leave any details out: the pages, the languages, the steps."], [34000, "Here's the same issue, written for the customer. Simple words, no internal jargon."], [40000, "Every detail is there: the page, the languages, and how to find it."], [43000, "And a clear line: action needed on your end."], [48000, "Always CC the account's CXM on every email to the customer."]],
+      [[0, "Part 4: set the case."], [4000, "After you notify the customer on an Automation case, set the Status to Pending."], [9000, "Then move the due date out one week. That gives the customer time to respond."], [16000, "Count business days only. A due date never lands on a weekend."], [24000, "If the case is Critical or Express, still set it to Pending, but only move the due date to the next business day."], [34000, "So on a Friday, the next business day is Monday, not Saturday."]],
+      [[0, "Part 5: when the customer doesn't respond."], [4000, "An Automation case stays open until the customer confirms it's resolved."], [10000, "So keep an eye on cases that go overdue."], [22000, "If a few weeks go by without the customer's feedback, send the case back to the QA person who created it."], [27000, "Add a note: there's been no feedback, so please exclude that specific script, or modify it to skip that flow."], [32000, "If the case is Critical, also alert the QA person on Teams: sent you Critical case number, please take a look."], [40000, "After that, QA can bring it to the CXM's attention, if needed."], [46000, "Or QA adjusts the script and sets the case to Closed, leaving clear notes in the SF case through a Post."], [58000, "Some cases get extremely overdue, because the customer just isn't interested or engaged."], [62000, "Those need to be closed too. But bring them up to the QA person first."], [68000, "Never close one without talking to QA first."]],
+      [[0, "Part 6: practice. What would you do?"], [4000, "An Automation case: a broken link on the customer's origin site, also showing on the translated sites."], [9000, "Explain it in simple words, ask them to fix it on their origin site, and CC the CXM. Then Pending, plus one week."], [14000, "PE fixed a translated page, but the customer still sees the old version."], [19000, "Ask them to clear their CDN cache, in simple words, with the CXM in CC."], [24000, "You're about to paste the QA note into your email."], [29000, "Don't. Rewrite it in simple words, keep every detail, and add a clear action needed line."], [34000, "The case is Critical, and you just emailed the customer."], [39000, "Set it to Pending, and move the due date to the next business day."], [44000, "Three weeks, and no reply on an Automation case."], [49000, "Send the case back to the QA person who created it, with a note: exclude the script, or skip that flow."], [54000, "The case is extremely overdue, and the customer isn't engaged."], [59000, "Bring it up to the QA person first, then close the case."]],
+      [[0, "Recap."], [2500, "Automation cases report origin site defects that affect the translated sites."], [5000, "Other cases need the customer's action after a PE or TAM review, like clearing the CDN cache."], [7000, "Explain it simply: no copy and paste, every detail, and a clear action needed line. Always CC the CXM."], [11500, "After notifying, set Pending and move the due date one week, or the next business day if it's Critical or Express. Business days only."], [14000, "Keep Automation cases open until the customer confirms."], [17000, "The main mission: simple words, and a clear message that this needs action on the customer's end."], [23000, "No reply for weeks? Send the case back to QA with a note. Extremely overdue? Talk to the QA person first, then close."], [31000, "Thanks for watching!"]]];
+  }
+  labels() { return ["Intro", "Automation", "Action", "Explain", "Set case", "No reply", "Practice", "Recap"]; }
+
+  /* ---------- original background jazz, synthesized live ---------- */
+  bars() {
+    // [bass walk (MIDI), chord voicing (MIDI)] — ii-V-I in F with turnarounds, 80 bpm swing
+    return [
+      [[43, 46, 50, 47], [58, 62, 65, 69]], // Gm9
+      [[48, 46, 43, 40], [58, 62, 64, 69]], // C13
+      [[41, 45, 48, 49], [57, 60, 64, 67]], // Fmaj9
+      [[50, 48, 45, 44], [54, 60, 64, 69]], // D9
+      [[43, 46, 50, 47], [58, 62, 65, 69]], // Gm9
+      [[48, 46, 43, 40], [58, 62, 64, 69]], // C13
+      [[45, 48, 52, 51], [60, 64, 67, 71]], // Am9
+      [[50, 48, 45, 44], [54, 60, 64, 69]]  // D9
+    ];
+  }
+  hz(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+  initAudio() {
+    if (this.ctx) return true;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return false;
+      const ctx = new AC();
+      const master = ctx.createGain();
+      master.gain.value = 0;
+      master.connect(ctx.destination);
+      const len = Math.floor(ctx.sampleRate * 1.0);
+      const noise = ctx.createBuffer(1, len, ctx.sampleRate);
+      const data = noise.getChannelData(0);
+      for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+      this.ctx = ctx; this.master = master; this.noise = noise;
+      this.beat = 0; this.nextT = 0;
+      return true;
+    } catch (e) { return false; }
+  }
+  pianoNote(m, t, vel, dur) {
+    const c = this.ctx;
+    const f = this.hz(m);
+    const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(2600, t); lp.frequency.exponentialRampToValueAtTime(900, t + dur);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vel, t + 0.006);
+    g.gain.exponentialRampToValueAtTime(vel * 0.3, t + 0.4);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    lp.connect(g); g.connect(this.master);
+    [[1, 1], [2, 0.28], [3, 0.08]].forEach((h) => {
+      const o = c.createOscillator(); o.type = 'sine'; o.frequency.value = f * h[0];
+      const hg = c.createGain(); hg.gain.value = h[1];
+      o.connect(hg); hg.connect(lp);
+      o.start(t); o.stop(t + dur + 0.05);
+    });
+  }
+  pianoChord(notes, t, vel, dur) {
+    notes.forEach((m, i) => this.pianoNote(m, t + i * 0.018, vel, dur));
+  }
+  tap(t, vol, dur, freq) {
+    const c = this.ctx;
+    const s = c.createBufferSource(); s.buffer = this.noise;
+    const f = c.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = freq;
+    const g = c.createGain();
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    s.connect(f); f.connect(g); g.connect(this.master);
+    s.start(t); s.stop(t + dur + 0.02);
+  }
+  scheduleBeat(i, t) {
+    const spb = 60 / 80;
+    const sw = spb * 2 / 3;
+    const barIx = Math.floor(i / 4) % 8;
+    const bar = this.bars()[barIx];
+    const b = i % 4;
+    this.tap(t, 0.014, 0.25, 7500);
+    if (b === 1 || b === 3) {
+      this.tap(t + sw, 0.01, 0.18, 7500);
+      this.tap(t, 0.012, 0.05, 9500);
+    }
+    if (b === 0) {
+      this.pianoNote(bar[0][0] + 12, t, 0.05, 2.4);
+      this.pianoChord(bar[1], t + 0.03, 0.028, 2.2);
+    }
+    const v = Math.floor(i / 4) % 2;
+    if (b === 2 && v === 0) this.pianoChord(bar[1], t + sw, 0.018, 1.2);
+    if (b === 1 && v === 1) this.pianoChord(bar[1], t + sw, 0.018, 1.2);
+  }
+  schedule() {
+    const c = this.ctx;
+    if (!c || c.state !== 'running' || !this.musicLive) return;
+    if (this.nextT < c.currentTime) this.nextT = c.currentTime + 0.05;
+    while (this.nextT < c.currentTime + 0.3) {
+      this.scheduleBeat(this.beat, this.nextT);
+      this.beat = (this.beat + 1) % 32;
+      this.nextT += 60 / 80;
+    }
+  }
+  musicStart() {
+    if (!this.state.music || !this.initAudio()) return;
+    const c = this.ctx;
+    try { c.resume(); } catch (e) {}
+    if (!this.musicLive) {
+      this.musicLive = true;
+      this.beat = 0;
+      this.nextT = c.currentTime + 0.1;
+      this.master.gain.cancelScheduledValues(c.currentTime);
+      this.master.gain.setValueAtTime(0.0001, c.currentTime);
+      this.master.gain.exponentialRampToValueAtTime(0.55, c.currentTime + 1.5);
+    }
+  }
+  musicStop(fade) {
+    if (!this.ctx) return;
+    const c = this.ctx;
+    this.musicLive = false;
+    const now = c.currentTime;
+    this.master.gain.cancelScheduledValues(now);
+    this.master.gain.setValueAtTime(Math.max(this.master.gain.value, 0.0001), now);
+    this.master.gain.exponentialRampToValueAtTime(0.0001, now + (fade || 0.3));
+  }
+  musicPause() { if (this.ctx) { try { this.ctx.suspend(); } catch (e) {} } }
+  musicResume() { if (this.ctx && this.state.music) { try { this.ctx.resume(); } catch (e) {} } }
+
+  componentDidMount() {
+    this.iv = setInterval(() => this.tick(), 200);
+    this.au = setInterval(() => this.schedule(), 60);
+  }
+  componentWillUnmount() {
+    clearInterval(this.iv); clearInterval(this.au); clearTimeout(this.to);
+    if (this.ctx) { try { this.ctx.close(); } catch (e) {} }
+  }
+  tick() {
+    const s = this.state;
+    if (!s.playing || s.scene < 0) return;
+    const d = this.durs();
+    const el = s.el + 200;
+    if (el >= d[s.scene]) {
+      if (s.scene < d.length - 1) this.setState({ scene: s.scene + 1, el: 0 });
+      else { this.setState({ el: d[s.scene], playing: false, ended: true }); this.musicStop(3); }
+    } else {
+      this.setState({ el: el });
+    }
+  }
+  go(i, off) {
+    off = off || 0;
+    clearTimeout(this.to);
+    this.musicStart();
+    this.musicResume();
+    this.setState({ scene: -1, el: 0 });
+    this.to = setTimeout(() => {
+      this.setState({ scene: i, el: off, started: true, playing: true, ended: false });
+      if (off) setTimeout(() => this.sync(off), 60);
+    }, 40);
+  }
+  sync(off) {
+    try {
+      const st = document.querySelector('.stage');
+      if (!st || !st.getAnimations) return;
+      st.getAnimations({ subtree: true }).forEach((a) => { try { a.currentTime = off; } catch (e) {} });
+    } catch (e) {}
+  }
+  jump(delta) {
+    const d = this.durs();
+    const s = this.state;
+    const cur = s.scene < 0 ? 0 : s.scene;
+    let t = 0;
+    for (let i = 0; i < cur; i++) t += d[i];
+    t += (s.scene < 0 || !s.started) ? 0 : s.el;
+    const total = d.reduce((a, b) => a + b, 0);
+    t = Math.max(0, Math.min(t + delta, total - 500));
+    let i = 0;
+    while (i < d.length - 1 && t >= d[i]) { t -= d[i]; i++; }
+    this.go(i, t);
+  }
+  fmt(ms) {
+    const t = Math.floor(ms / 1000);
+    const m = Math.floor(t / 60);
+    const sec = t % 60;
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+  renderVals() {
+    const s = this.state;
+    const d = this.durs();
+    const total = d.reduce((a, b) => a + b, 0);
+    const cur = s.scene < 0 ? 0 : s.scene;
+    let done = 0;
+    for (let i = 0; i < cur; i++) done += d[i];
+    done += s.scene < 0 ? 0 : s.el;
+    const vis = s.started ? s.scene : -2;
+    const chapters = this.labels().map((label, i) => ({
+      label: label,
+      cls: s.started && i === cur ? 'on' : (s.started && i < cur ? 'done' : ''),
+      go: () => this.go(i)
+    }));
+    return {
+      s0: vis === 0, s1: vis === 1, s2: vis === 2, s3: vis === 3, s4: vis === 4, s5: vis === 5, s6: vis === 6, s7: vis === 7,
+      showCover: !s.started,
+      pauseCls: s.playing ? '' : 'paused',
+      isPlaying: s.playing,
+      notPlaying: !s.playing,
+      playLabel: s.playing ? 'Pause' : (s.ended ? 'Replay' : 'Play'),
+      progressW: (Math.min(1, done / total) * 100).toFixed(2) + '%',
+      timeLabel: this.fmt(done) + ' / ' + this.fmt(total),
+      chapters: chapters,
+      steps: [1, 2, 3, 4, 5, 6, 7].map((n) => ({ n: n, on: s.started && s.scene >= 0 && s.scene === n })),
+      showSubs: s.subsOn && s.started,
+      subs: (() => {
+        const L = s.scene >= 0 ? this.subLines()[s.scene] : [];
+        let act = -1;
+        L.forEach((c, i) => { if (s.el >= c[0]) act = i; });
+        return L.map((c, i) => ({ text: c[1], on: i === act }));
+      })(),
+      subsOn: s.subsOn,
+      subsLabel: s.subsOn ? 'Hide captions' : 'Show captions',
+      subsColor: s.subsOn ? '#8FD16F' : '#A9B8CC',
+      toggleSubs: () => this.setState({ subsOn: !this.state.subsOn }),
+      musicOn: s.music,
+      musicOff: !s.music,
+      musicLabel: s.music ? 'Music on' : 'Music off',
+      toggleMusic: () => {
+        const on = !this.state.music;
+        this.setState({ music: on }, () => {
+          if (!on) this.musicStop(0.6);
+          else if (this.state.playing) this.musicStart();
+        });
+      },
+      togglePlay: () => {
+        if (!this.state.started || this.state.ended) this.go(0);
+        else {
+          const playing = !this.state.playing;
+          if (playing) this.musicResume(); else this.musicPause();
+          this.setState({ playing: playing });
+        }
+      },
+      replay: () => this.go(0),
+      back10: () => this.jump(-10000),
+      fwd10: () => this.jump(10000),
+      prev: () => this.go(Math.max(0, cur - 1)),
+      next: () => this.go(Math.min(d.length - 1, cur + 1))
+    };
+  }
+}
+
+Player.prototype.setState = function (obj, cb) { Object.assign(this.state, obj); this.render(); if (cb) cb(); };
+Player.prototype.render = function () {
+  const v = this.renderVals();
+  const $ = (id) => document.getElementById(id);
+  const s = this.state;
+  const vis = s.started ? s.scene : -2;
+  if (vis !== this._vis) {
+    this._vis = vis;
+    const tpl = $('scene-' + vis);
+    $('sceneHost').innerHTML = tpl ? tpl.innerHTML : '';
+  }
+  $('stage').classList.toggle('paused', !s.playing);
+  $('cover').hidden = !v.showCover;
+  const st = v.steps.find((x) => x.on);
+  const stn = st ? st.n : 0;
+  if (stn !== this._step) { this._step = stn; $('steps').innerHTML = stn ? STEP_HTML.split('{{st.n}}').join(String(stn)) : ''; }
+  const sb = v.showSubs ? v.subs.find((x) => x.on) : null;
+  const key = sb ? s.scene + '|' + sb.text : '';
+  if (key !== this._sub) {
+    this._sub = key;
+    $('subs').innerHTML = '';
+    if (sb) { const d = document.createElement('div'); d.innerHTML = SUB_OPEN + '</div>'; d.firstChild.textContent = sb.text; $('subs').appendChild(d.firstChild); }
+  }
+  $('prog').style.width = v.progressW;
+  $('timeLabel').textContent = v.timeLabel;
+  $('playLabel').textContent = v.playLabel;
+  $('playBtn').setAttribute('aria-label', v.playLabel);
+  $('icoPause').hidden = !v.isPlaying; $('icoPlay').hidden = v.isPlaying;
+  $('musicLabel').textContent = v.musicLabel; $('musicBtn').setAttribute('aria-label', v.musicLabel); $('musicBtn').setAttribute('aria-pressed', String(v.musicOn));
+  $('icoMusicOn').hidden = !v.musicOn; $('icoMusicOff').hidden = v.musicOn;
+  $('subsBtn').setAttribute('aria-label', v.subsLabel); $('subsBtn').setAttribute('aria-pressed', String(v.subsOn)); $('subsIcon').setAttribute('stroke', v.subsColor);
+  const ck = v.chapters.map((c) => c.cls).join(',');
+  if (ck !== this._chips) {
+    this._chips = ck;
+    const host = $('chapters'); host.innerHTML = '';
+    v.chapters.forEach((c, i) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'chip ' + c.cls; b.textContent = c.label;
+      b.addEventListener('click', () => this.go(i)); host.appendChild(b);
+    });
+  }
+};
+const P = new Player();
+const call = (k) => () => P.renderVals()[k]();
+document.getElementById('coverPlay').addEventListener('click', call('togglePlay'));
+document.getElementById('playBtn').addEventListener('click', call('togglePlay'));
+document.getElementById('replayBtn').addEventListener('click', call('replay'));
+document.getElementById('prevBtn').addEventListener('click', call('prev'));
+document.getElementById('back10Btn').addEventListener('click', call('back10'));
+document.getElementById('fwd10Btn').addEventListener('click', call('fwd10'));
+document.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') { e.preventDefault(); call('back10')(); } else if (e.key === 'ArrowRight') { e.preventDefault(); call('fwd10')(); } else if (e.key === ' ' && e.target === document.body) { e.preventDefault(); call('togglePlay')(); } });
+document.getElementById('nextBtn').addEventListener('click', call('next'));
+document.getElementById('musicBtn').addEventListener('click', call('toggleMusic'));
+document.getElementById('subsBtn').addEventListener('click', call('toggleSubs'));
+P.render();
+P.componentDidMount();
+
+</script>
+</body>
+</html>
